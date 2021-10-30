@@ -34,6 +34,9 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-dbPostgres.authenticate().then(dbSync.sync()).catch(console.log);
+dbPostgres.authenticate().then(() => {
+  console.log('databse-connect');
+  dbSync.sync()
+}).catch(console.log);
 
 module.exports = app;
