@@ -1,20 +1,14 @@
 const Sequelize = require("sequelize");
 
-// const sequelize = new Sequelize(
-//   process.env.DATABASE_NAME,
-//   process.env.DATABASE_USER,
-//   process.env.DATABASE_PASSWORD,
-//   {
-//     host: process.env.DATABASE_HOST,
-//     dialect: "postgres",
-//     logging: false,
-//   }
-// );
-
-const sequelize = new Sequelize("classroom", "cfcadmin", "asdf1234", {
-  host: "localhost",
-  dialect: "postgres",
-  logging: false,
-});
+const sequelize = new Sequelize(
+  process.env.DATABASE_NAME,
+  process.env.DATABASE_USER,
+  process.env.DATABASE_PASSWORD,
+  {
+    host: process.env.DATABASE_HOST,
+    dialect: "postgres",
+    logging: false,
+  }
+);
 
 module.exports = sequelize;
