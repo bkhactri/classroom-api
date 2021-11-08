@@ -6,7 +6,7 @@ const createNewClass = async (req, res, next) => {
     section: req.body.section,
     subject: req.body.subject,
     room: req.body.room ? req.body.room : null,
-    author: req.body.author,
+    author: req.user.username,
   };
 
   try {
