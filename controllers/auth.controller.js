@@ -45,9 +45,19 @@ const googleAuthCall = (req, res, next) => {
 };
 
 const googleAuthCallback = (req, res, next) => {
-  passport.authenticate( 'google', {
-    successRedirect: '/',
-    failureRedirect: '/google'
+  passport.authenticate( 'google', (err, user, info) => {
+    if (err) return res.status(500).send(err);
+
+    if (!(info && Object.keys(info).length === 0 && Object.getPrototypeOf(info) === Object.prototype)) {
+      res.status(info.status).send(info.message);
+    } else {
+      console.log('user ', user);
+      const accessToken = generateAccessToken(user.dataValues);
+      const refreshToken = generateRefreshToken(user.dataValues);
+      const { id, username, email } = user.dataValues;
+      const responseData = { id, username, email, accessToken, refreshToken };
+      res.status(200).send(responseData);
+    }
   })(req, res, next);
 };
 
