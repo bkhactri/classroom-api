@@ -1,5 +1,6 @@
 require("custom-env").env();
 require("./utils/config/passportLocal");
+require("./utils/config/passportGoogle");
 // usage library
 const createError = require("http-errors");
 const express = require("express");
@@ -38,6 +39,9 @@ app.use(function (req, res, next) {
   res.setHeader("Last-Modified", new Date().toUTCString());
   next();
 });
+
+
+
 
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
