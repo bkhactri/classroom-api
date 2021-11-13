@@ -1,11 +1,15 @@
 //const userModel = require('../../../models/user.model');
 const passport = require("passport");
+const GoogleUser = require("../../models/googleUser.model");
+const User = require("../../models/user.model");
+
+
 
 
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
-const GOOGLE_CLIENT_ID = '202449967032-kvdat9mvib22cqbqlc3c3ehfu6f5kb2i.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = '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';
+const GOOGLE_CLIENT_ID = '242348377463-m3grl1leu4gu8rqelo7hmnc6igpckvn0.apps.googleusercontent.com';
+const GOOGLE_CLIENT_SECRET = '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';
 
 const initializeGooglePassport = (passport) => {
     passport.use(new GoogleStrategy(
@@ -16,32 +20,67 @@ const initializeGooglePassport = (passport) => {
             passReqToCallback: true
         },
 
-        (accessToken, refreshToken, profile, done) => {
-            // userModel.getUserGoogleByGoogleID(profile.id).then((rows) => {
-            //     if (rows.length === 0){
-            //         const user = rows[0];
-            //         done(null, user);
-            //     } else {
-            //         console.log(profile);
-            //         done(null, {id: profile.id});
-            //     }
-            // });
-            console.log('profile: ', profile);
-            done(null, {profile: profile});
+        function(request, accessToken, refreshToken, profile, done) {
+            GoogleUser.findByPk(profile.id).then((googleUser, err) => {
+                if (err) return done(err);
+
+                if (googleUser === null){
+                    const username = `Google@${profile.id}`;
+                    const email = profile.email;
+                    const password = profile.id;
+                    
+                    register(username, email, password, profile.id, GoogleUser, done);
+                } else {
+                    User.findByPk(googleUser.userID).then(user => {
+                        return done(null, user);
+                    })
+                }
+            })
         }
         )
     );
 
-    passport.serializeUser((user, done) => {
+    passport.serializeUser(function (user, done) {
         done(null, user.id);
-    });
-
-    passport.deserializeUser((id, done) => {
-        // userModel.getUserGoogleByGoogleID(id).then((rows) => {
-        //     done(null, rows[0]);
-        // });
-        done(null, {id: 1});
+      });
+      
+    passport.deserializeUser(function (id, done) {
+        User.findByPk(id, function (err, user) {
+            done(err, user);
+        });
     });
 }
+
+const register = (username, email, password, googleID, GoogleUserTable, done) => {
+    User.findOne({ where: { email: email } }).then((user, err) => {
+      if (err) return done(err);
+
+      if (user)
+        return done(null, false, { status: 400, message: "Email is taken" });
+
+      const userDataForSignUp = {
+        username: username,
+        email: email,
+        password: password,
+      };
+
+      User.create(userDataForSignUp)
+        .then(function (newUser, created) {
+          if (!newUser) {
+            return done(null, false);
+          }
+
+          if (newUser) {
+            GoogleUserTable.create({userID: newUser.id, googleID: googleID});
+            return done(null, newUser);
+          }
+        })
+        .catch(function (err) {
+          console.error(JSON.stringify(err, null, 2));
+          return done(null, false, { status: 500 });
+        });
+    });
+  }
+
 
 initializeGooglePassport(passport);
