@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start:dev": "NODE_ENV=development nodemon ./bin/www",
-    "start": "NODE_ENV=production node ./bin/www"
+    "start:dev": "cross-env NODE_ENV=development nodemon ./bin/www",
+    "start": "cross-env NODE_ENV=production node ./bin/www"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -26,6 +26,7 @@
     "sequelize": "^6.7.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^2.0.14"
   }
 }

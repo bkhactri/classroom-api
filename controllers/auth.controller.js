@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
 
 const authLogin = async (req, res, next) => {
   passport.authenticate("classroom.login", function (err, user, info) {
-    if (err) res.status(500).send(err);
+    if (err) return res.status(500).send(err);
 
     if (info) {
       res.status(info.status).send(info.message);
@@ -26,7 +26,7 @@ const authLogin = async (req, res, next) => {
 
 const authSignup = async (req, res, next) => {
   passport.authenticate("classroom.signup", function (err, user, info) {
-    if (err) res.status(500).send(err);
+    if (err) return res.status(500).send(err);
 
     if (info) {
       res.status(info.status).send(info.message);

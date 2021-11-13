@@ -1,4 +1,5 @@
 const classroomService = require("../services/classroom.service");
+const participantService = require("../services/participant.service");
 
 const createNewClass = async (req, res, next) => {
   const data = {
@@ -11,6 +12,9 @@ const createNewClass = async (req, res, next) => {
 
   try {
     const result = await classroomService.create(data);
+
+    await participantService.create(req.user.id, result.id, "OWNER");
+
     res.status(201).send(result);
   } catch (err) {
     res.sendStatus(500) && next(err);

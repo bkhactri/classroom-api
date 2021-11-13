@@ -60,15 +60,20 @@ passport.use(
           password: password,
         };
 
-        User.create(userDataForSignUp).then(function (newUser, created) {
-          if (!newUser) {
-            return done(null, false);
-          }
+        User.create(userDataForSignUp)
+          .then(function (newUser, created) {
+            if (!newUser) {
+              return done(null, false);
+            }
 
-          if (newUser) {
-            return done(null, newUser);
-          }
-        });
+            if (newUser) {
+              return done(null, newUser);
+            }
+          })
+          .catch(function (err) {
+            console.error(JSON.stringify(err, null, 2));
+            return done(null, false, { status: 500 });
+          });
       });
     }
   )

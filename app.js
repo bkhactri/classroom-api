@@ -20,6 +20,9 @@ const authRoutes = require("./routes/auth.routes");
 // constants
 const { SESSION_CONFIG } = require("./utils/constants/index");
 
+// init database tables, DELETE LATER
+const Participant = require('./models/participant.model');
+
 const app = express();
 
 app.use(session(SESSION_CONFIG));
