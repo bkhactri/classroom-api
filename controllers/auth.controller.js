@@ -38,6 +38,7 @@ const authSignup = async (req, res, next) => {
 
 const authLogout = async (req, res, next) => {
   req.logout();
+  res.sendStatus(200);
 };
 
 module.exports = {
