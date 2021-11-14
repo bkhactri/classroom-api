@@ -28,6 +28,10 @@ const Classroom = sequelize.define("classroom", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  classCode: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  }
 });
 
 module.exports = Classroom;

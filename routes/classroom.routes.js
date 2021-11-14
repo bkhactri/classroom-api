@@ -11,6 +11,12 @@ router.get(
 );
 
 router.get(
+  "/join",
+  authMiddleware.verifyToken,
+  classroomController.getClassInviteInfo
+);
+
+router.get(
   "/:classroomId",
   authMiddleware.verifyToken,
   classroomController.getClass
@@ -21,5 +27,11 @@ router.post(
   authMiddleware.verifyToken,
   classroomController.createNewClass
 );
+
+router.post(
+  "/join",
+  authMiddleware.verifyToken,
+  classroomController.joinClass
+)
 
 module.exports = router;
