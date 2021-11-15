@@ -11,4 +11,9 @@ router.post("/signup", authController.authSignup);
 
 router.post("/logout", authController.authLogout);
 
+router.get('/google/callback', authController.googleAuthCallback);
+
+router.get('/google', authController.googleAuthCall);
+
+
 module.exports = router;

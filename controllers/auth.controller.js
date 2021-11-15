@@ -41,9 +41,22 @@ const authLogout = async (req, res, next) => {
   res.sendStatus(200);
 };
 
+const googleAuthCall = (req, res, next) => {
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+};
+
+const googleAuthCallback = (req, res, next) => {
+  passport.authenticate( 'google', {
+    successRedirect: '/',
+    failureRedirect: '/google'
+  })(req, res, next);
+};
+
 module.exports = {
   auth,
   authLogin,
   authSignup,
   authLogout,
+  googleAuthCall,
+  googleAuthCallback
 };
