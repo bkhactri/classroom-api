@@ -9,6 +9,14 @@ const User = sequelize.define("user", {
     defaultValue: Sequelize.UUIDV4,
     allowNull: false,
   },
+  displayName: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  studentId: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   username: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -36,5 +44,7 @@ User.beforeSave((user) => {
 User.prototype.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
+
+User.sync({ alter: true });
 
 module.exports = User;

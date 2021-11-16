@@ -21,4 +21,6 @@ Participant.belongsTo(User);
 Classroom.hasMany(Participant);
 Participant.belongsTo(Classroom);
 
+Participant.sync();
+
 module.exports = Participant;
