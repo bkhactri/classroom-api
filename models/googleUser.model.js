@@ -11,7 +11,9 @@ const GoogleUser = sequelize.define("gooleUser", {
     type: Sequelize.STRING,
     primaryKey: true,
     allowNull: false,
-  }
+  },
 });
+
+GoogleUser.sync({ alter: true });
 
 module.exports = GoogleUser;

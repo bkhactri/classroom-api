@@ -42,17 +42,26 @@ const authLogout = async (req, res, next) => {
 };
 
 const googleAuthCall = (req, res, next) => {
-  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+  passport.authenticate("google", { scope: ["profile", "email"] })(
+    req,
+    res,
+    next
+  );
 };
 
 const googleAuthCallback = (req, res, next) => {
-  passport.authenticate( 'google', (err, user, info) => {
+  passport.authenticate("google", (err, user, info) => {
     if (err) return res.status(500).send(err);
 
-    if (!(info && Object.keys(info).length === 0 && Object.getPrototypeOf(info) === Object.prototype)) {
+    if (
+      !(
+        info &&
+        Object.keys(info).length === 0 &&
+        Object.getPrototypeOf(info) === Object.prototype
+      )
+    ) {
       res.status(info.status).send(info.message);
     } else {
-      // console.log('user ', user);
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
       const { id, username, email } = user.dataValues;
@@ -68,5 +77,5 @@ module.exports = {
   authSignup,
   authLogout,
   googleAuthCall,
-  googleAuthCallback
+  googleAuthCallback,
 };

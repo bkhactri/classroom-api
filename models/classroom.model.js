@@ -31,7 +31,9 @@ const Classroom = sequelize.define("classroom", {
   classCode: {
     type: Sequelize.STRING,
     allowNull: true,
-  }
+  },
 });
+
+Classroom.sync({ alter: true });
 
 module.exports = Classroom;
