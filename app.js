@@ -43,11 +43,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-<<<<<<< HEAD
-=======
 
-
->>>>>>> feature/viewClassrommList
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
 app.use("/account", userRoutes);
