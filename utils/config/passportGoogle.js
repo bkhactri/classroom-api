@@ -32,7 +32,8 @@ const initializeGooglePassport = (passport) => {
                     register(username, email, password, profile.id, GoogleUser, done);
                 } else {
                     User.findByPk(googleUser.userID).then(user => {
-                        return done(null, user);
+                      // console.log('user', user);
+                      return done(null, user);
                     })
                 }
             })
@@ -41,10 +42,12 @@ const initializeGooglePassport = (passport) => {
     );
 
     passport.serializeUser(function (user, done) {
+        // console.log('serialize', user);
         done(null, user.id);
       });
       
     passport.deserializeUser(function (id, done) {
+      // console.log('deserialize', id);
         User.findByPk(id, function (err, user) {
             done(err, user);
         });
