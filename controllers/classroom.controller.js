@@ -38,35 +38,35 @@ const getClass = async (req, res, next) => {
   const classroomId = req.params.classroomId;
 
   try {
-    const classroom = await classroomService.findMyClassById(classroomId);
+    const classroom = await classroomService.findMyClassById(classroomId, req.user.id);
 
     if (!classroom) {
       return res.sendStatus(404);
     }
 
-    if (classroom.participants.some((p) => req.user.id === p.userId)) {
-      res.status(200).json(classroom);
-    } else {
-      return res.status(403).send("You are not in this classroom");
-    }
+    res.status(200).json(classroom);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
 };
 
 const getClassInviteInfo = async (req, res, next) => {
-  const { code } = req.query;
+  const { id, code } = req.query;
 
   try {
-    const classroom = await classroomService.findByClassCode(code);
+    const classroom = id && (id !== 'c') 
+      ? await classroomService.findById(id)
+      : await classroomService.findByClassCode(code);
+
     if (!classroom) {
-      return res.status(400).send("No class found with the provided code");
+      return res.status(400).send("No class found with the provided id and code");
     }
 
     const participant = await participantService.findById(req.user.id, classroom.id);
     if (participant) {
       return res.status(400).send("You are already in the classroom");
     }
+
 
     const role = classroomService.getClassRole(code, classroom.classCode);
     if (!role) return res.sendStatus(400);

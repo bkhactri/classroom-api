@@ -13,11 +13,13 @@ const session = require("express-session");
 const cors = require("cors");
 
 const connection = require("./utils/database/connection");
+const { checkMailConnection } = require("./utils/config/nodemailer.config");
 
 // api routes
 const classroomRoutes = require("./routes/classroom.routes");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const mailRoutes = require("./routes/mail.routes");
 
 // constants
 const { SESSION_CONFIG } = require("./utils/constants/index");
@@ -44,6 +46,7 @@ app.use(function (req, res, next) {
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
 app.use("/account", userRoutes);
+app.use("/mail", mailRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -56,5 +59,7 @@ connection
     console.log("DB Connected");
   })
   .catch(console.log);
+
+checkMailConnection();
 
 module.exports = app;

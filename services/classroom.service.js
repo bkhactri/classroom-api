@@ -25,12 +25,17 @@ const findById = async (classroomId) => {
   }
 }
 
-const findMyClassById = async (classroomId) => {
+const findMyClassById = async (classroomId, userId) => {
   try {
     return await Classroom.findOne({
       where: { id: classroomId },
       include: {
         model: Participant,
+        required: true,
+        where: {
+          userId,
+        },
+        attributes: ["role"]
       },
     });
   } catch (e) {
@@ -47,6 +52,7 @@ const findMyClasses = async (userId) => {
         where: {
           userId,
         },
+        attributes: []
       },
     });
   } catch (e) {
@@ -87,8 +93,17 @@ const generateClassCodeAndSave = async (classroom) => {
 const getClassRole = (requestedCode, classCode) => {
   if (requestedCode === classCode) return "STUDENT";
 
-  const hexString = classCode.split("").reverse().join("").toLowerCase();
-  const teacherCode = Buffer.from(hexString, "hex").toString("base64").replace(/=/g, "");
+  const temp = classCode.split("").reverse();
+  const teacherCode = temp
+    .slice(parseInt(classCode.length / 2))
+    .concat(temp.slice(0, parseInt(classCode.length / 2)))
+    .map((char) => {
+      if (char === 'Z') {
+        return String.fromCharCode(char.charCodeAt() - 1);
+      }
+      return String.fromCharCode(char.charCodeAt() + 1);
+    })
+    .join("");
 
   if (requestedCode === teacherCode) return "TEACHER";
   
