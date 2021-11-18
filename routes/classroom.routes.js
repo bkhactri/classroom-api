@@ -17,6 +17,13 @@ router.get(
 );
 
 router.get(
+  "/participants",
+  authMiddleware.verifyToken,
+  classroomController.getParticipantByClassID
+);
+
+
+router.get(
   "/:classroomId",
   authMiddleware.verifyToken,
   classroomController.getClass

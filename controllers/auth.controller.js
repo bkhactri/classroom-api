@@ -51,15 +51,23 @@ const googleAuthCallback = (req, res, next) => {
     if (!(info && Object.keys(info).length === 0 && Object.getPrototypeOf(info) === Object.prototype)) {
       res.status(info.status).send(info.message);
     } else {
-      // console.log('user ', user);
-      const accessToken = generateAccessToken(user.dataValues);
-      const refreshToken = generateRefreshToken(user.dataValues);
-      const { id, username, email } = user.dataValues;
-      const responseData = { id, username, email, accessToken, refreshToken };
-      res.status(200).send(responseData);
+      console.log('user ', user);
+      
+      res.redirect(`${process.env.REACT_CLIENT_END_POINT}/loginSucess`);
     }
   })(req, res, next);
 };
+
+const getUserAuthData = async (req, res, next) => {
+  req.user.then((user) => {
+    const accessToken = generateAccessToken(user.dataValues);
+    const refreshToken = generateRefreshToken(user.dataValues);
+    const { id, username, email } = user.dataValues;
+    const responseData = { id, username, email, accessToken, refreshToken };
+    res.status(200).send(responseData);
+  })
+};
+
 
 module.exports = {
   auth,
@@ -67,5 +75,6 @@ module.exports = {
   authSignup,
   authLogout,
   googleAuthCall,
-  googleAuthCallback
+  googleAuthCallback,
+  getUserAuthData
 };

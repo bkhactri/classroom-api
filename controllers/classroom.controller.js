@@ -54,6 +54,18 @@ const getClass = async (req, res, next) => {
   }
 };
 
+const getParticipantByClassID = async (req, res, next) => {
+  try {
+    const classID = req.query.classroomID;
+    console.log("classid", classID);
+    const participants = await participantService.findByClassID(classID);
+    
+    res.status(200).json(participants);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
 const getClassInviteInfo = async (req, res, next) => {
   const { code } = req.query;
 
@@ -105,4 +117,5 @@ module.exports = {
   getClass,
   getClassInviteInfo,
   joinClass,
+  getParticipantByClassID
 };
