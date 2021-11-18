@@ -1,5 +1,4 @@
 //const userModel = require('../../../models/user.model');
-require("custom-env").env();
 const passport = require("passport");
 const GoogleUser = require("../../models/googleUser.model");
 const User = require("../../models/user.model");
