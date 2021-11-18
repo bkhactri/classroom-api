@@ -1,4 +1,5 @@
 const Participant = require("../models/participant.model");
+const User = require("../models/user.model");
 
 /**
  *
@@ -29,4 +30,17 @@ const findById = async (userId, classroomId) => {
   }
 };
 
-module.exports = { create, findById };
+const findByClassID = async (classroomId) => {
+  try {
+    return await Participant.findAll({
+      where: { classroomId : classroomId},
+      include: [{
+        model: User,
+        required: true
+       }]
+    });
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+module.exports = { create, findById, findByClassID };

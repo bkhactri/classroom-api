@@ -66,10 +66,26 @@ const googleAuthCallback = (req, res, next) => {
       const refreshToken = generateRefreshToken(user.dataValues);
       const { id, username, email } = user.dataValues;
       const responseData = { id, username, email, accessToken, refreshToken };
-      res.status(200).send(responseData);
+      
+      let url = new URL(`${process.env.REACT_CLIENT_END_POINT}/loginSucess`);
+      url.searchParams.append('id', id);
+      url.searchParams.append('accessToken', accessToken);
+      res.redirect(url);
     }
   })(req, res, next);
 };
+
+const getUserAuthData = async (req, res, next) => {
+  // console.log('req.user', req.user);
+  req.user.then((user) => {
+    const accessToken = generateAccessToken(user.dataValues);
+    const refreshToken = generateRefreshToken(user.dataValues);
+    const { id, username, email } = user.dataValues;
+    const responseData = { id, username, email, accessToken, refreshToken };
+    res.status(200).send(responseData);
+  })
+};
+
 
 module.exports = {
   auth,
@@ -78,4 +94,5 @@ module.exports = {
   authLogout,
   googleAuthCall,
   googleAuthCallback,
+  getUserAuthData
 };

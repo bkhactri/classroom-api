@@ -15,5 +15,7 @@ router.get('/google/callback', authController.googleAuthCallback);
 
 router.get('/google', authController.googleAuthCall);
 
+router.get('/getUserAuthData', authController.getUserAuthData);
+
 
 module.exports = router;

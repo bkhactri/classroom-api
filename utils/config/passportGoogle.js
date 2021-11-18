@@ -5,49 +5,51 @@ const User = require("../../models/user.model");
 
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 
-const GOOGLE_CLIENT_ID =
-  "242348377463-m3grl1leu4gu8rqelo7hmnc6igpckvn0.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET = "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";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 const initializeGooglePassport = (passport) => {
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
-        passReqToCallback: true,
-      },
+    passport.use(new GoogleStrategy(
+        {
+            clientID:     GOOGLE_CLIENT_ID,
+            clientSecret: GOOGLE_CLIENT_SECRET,
+            callbackURL: "http://localhost:8000/auth/google/callback",
+            passReqToCallback: true
+        },
 
-      function (request, accessToken, refreshToken, profile, done) {
-        GoogleUser.findByPk(profile.id).then((googleUser, err) => {
-          if (err) return done(err);
+        function(request, accessToken, refreshToken, profile, done) {
+            GoogleUser.findByPk(profile.id).then((googleUser, err) => {
+                if (err) return done(err);
 
-          if (googleUser === null) {
-            const username = `Google@${profile.id}`;
-            const email = profile.email;
-            const password = profile.id;
+                if (googleUser === null){
+                    const username = `Google@${profile.id}`;
+                    const email = profile.email;
+                    const password = profile.id;
+                    
+                    register(username, email, password, profile.id, GoogleUser, done);
+                } else {
+                    User.findByPk(googleUser.userID).then(user => {
+                      // console.log('user', user);
+                      return done(null, user);
+                    })
+                }
+            })
+        }
+        )
+    );
 
-            register(username, email, password, profile.id, GoogleUser, done);
-          } else {
-            User.findByPk(googleUser.userID).then((user) => {
-              return done(null, user);
-            });
-          }
+    passport.serializeUser(function (user, done) {
+        // console.log('serialize', user);
+        done(null, user.id);
+      });
+      
+    passport.deserializeUser(function (id, done) {
+      // console.log('deserialize', id);
+        User.findByPk(id, function (err, user) {
+            done(err, user);
         });
       }
     )
-  );
-
-  passport.serializeUser(function (user, done) {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(function (id, done) {
-    User.findByPk(id, function (err, user) {
-      done(err, user);
-    });
-  });
 };
 
 const register = (
