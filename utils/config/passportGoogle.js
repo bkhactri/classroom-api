@@ -8,8 +8,8 @@ const User = require("../../models/user.model");
 
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
-const GOOGLE_CLIENT_ID = '242348377463-m3grl1leu4gu8rqelo7hmnc6igpckvn0.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = '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';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 const initializeGooglePassport = (passport) => {
     passport.use(new GoogleStrategy(
