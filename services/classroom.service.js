@@ -78,7 +78,9 @@ const findByClassCode = async (classCode) => {
 const generateClassCodeAndSave = async (classroom) => {
   const hexString = classroom.id.replace(/-/g, "");
 
-  const classCode = Buffer.from(hexString, "hex").toString("base64").replace(/=/g, "");
+  const classCode = Buffer.from(hexString, "hex").toString("base64")
+    .replace(/=/g, "")
+    .replace(/\//g, "x");
 
   return await classroom.update({ classCode });
 };
