@@ -112,6 +112,17 @@ const getClassRole = (requestedCode, classCode) => {
   return null;
 }
 
+const updateById = async (classroomId, classroom) => {
+  try {
+    return await Classroom.update(
+      classroom,
+      {where: {id: classroomId}},
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+}
+
 module.exports = {
   create,
   findAll,
@@ -121,4 +132,5 @@ module.exports = {
   findMyClasses,
   generateClassCodeAndSave,
   getClassRole,
+  updateById
 };

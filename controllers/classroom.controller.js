@@ -111,11 +111,25 @@ const joinClass = async (req, res, next) => {
   }
 };
 
+const saveClass = async (req, res, next) => {
+  const { classroomId } = req.params;
+  const classroom = req.body;
+
+  try {
+    const result = await classroomService.updateById(classroomId, classroom);
+
+    if (result) res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+}
+
 module.exports = {
   createNewClass,
   getClasses,
   getClass,
   getClassInviteInfo,
   joinClass,
-  getParticipantByClassID
+  getParticipantByClassID,
+  saveClass
 };
