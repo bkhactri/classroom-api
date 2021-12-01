@@ -39,6 +39,12 @@ router.post(
   "/join",
   authMiddleware.verifyToken,
   classroomController.joinClass
-)
+);
+
+router.put(
+  "/:classroomId",
+  authMiddleware.verifyToken,
+  classroomController.saveClass
+);
 
 module.exports = router;
