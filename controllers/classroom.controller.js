@@ -115,10 +115,14 @@ const saveClass = async (req, res, next) => {
   const { classroomId } = req.params;
   const classroom = req.body;
 
-  try {
-    const result = await classroomService.updateById(classroomId, classroom);
+  if (classroomId !== classroom.id) {
+    return res.sendStatus(400);
+  }
 
-    if (result) res.sendStatus(200);
+  try {
+    await classroomService.updateById(classroomId, classroom);
+
+    res.sendStatus(200);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }

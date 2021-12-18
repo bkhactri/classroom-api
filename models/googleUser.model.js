@@ -1,6 +1,5 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../utils/database/connection");
-const bcrypt = require("bcryptjs");
 
 const GoogleUser = sequelize.define("gooleUser", {
   userID: {
