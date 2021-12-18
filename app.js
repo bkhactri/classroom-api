@@ -20,6 +20,7 @@ const classroomRoutes = require("./routes/classroom.routes");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const mailRoutes = require("./routes/mail.routes");
+const gradeRoutes = require("./routes/grade.routes");
 
 // constants
 const { SESSION_CONFIG } = require("./utils/constants/index");
@@ -48,6 +49,7 @@ app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
 app.use("/account", userRoutes);
 app.use("/mail", mailRoutes);
+app.use("/grade", gradeRoutes);
 
 
 // catch 404 and forward to error handler

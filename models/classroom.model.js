@@ -32,11 +32,6 @@ const Classroom = sequelize.define("classroom", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  grades: {
-    type: Sequelize.JSON,
-    defaultValue: [],
-    allowNull: true,
-  }
 });
 
 Classroom.sync({ alter: true });
