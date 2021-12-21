@@ -12,6 +12,8 @@ const Participant = sequelize.define("participant", {
   },
 });
 
+Participant.sync();
+
 User.belongsToMany(Classroom, { through: Participant, onDelete: "cascade" });
 Classroom.belongsToMany(User, { through: Participant, onDelete: "cascade" });
 
@@ -20,7 +22,5 @@ Participant.belongsTo(User);
 
 Classroom.hasMany(Participant);
 Participant.belongsTo(Classroom);
-
-Participant.sync();
 
 module.exports = Participant;
