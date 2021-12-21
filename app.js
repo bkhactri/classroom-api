@@ -11,6 +11,7 @@ const logger = require("morgan");
 const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
+const multer = require("multer");
 
 const connection = require("./utils/database/connection");
 const { checkMailConnection } = require("./utils/config/nodemailer.config");
@@ -21,6 +22,7 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const mailRoutes = require("./routes/mail.routes");
 const gradeRoutes = require("./routes/grade.routes");
+const studentIdentificationRoutes = require("./routes/student-identification.routes");
 
 // constants
 const { SESSION_CONFIG } = require("./utils/constants/index");
@@ -44,12 +46,26 @@ app.use(function (req, res, next) {
   next();
 });
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "files");
+  },
+  filename: (req, file, callback) => {
+    callback(null, file.originalname);
+  },
+});
+app.use(
+  multer({ storage: fileStorage }).fields([{ name: "file", maxCount: 1 }])
+);
+app.use("/files", express.static(path.join(__dirname, "files")));
+
 
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
 app.use("/account", userRoutes);
 app.use("/mail", mailRoutes);
 app.use("/grade", gradeRoutes);
+app.use("/student-identification", studentIdentificationRoutes);
 
 
 // catch 404 and forward to error handler
