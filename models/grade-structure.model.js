@@ -12,21 +12,20 @@ const GradeStructure = sequelize.define("grade_structure", {
   },
   name: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   point: {
     type: Sequelize.DECIMAL(9, 2),
-    allowNull: false
+    allowNull: false,
   },
   order: {
     type: Sequelize.INTEGER,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 });
 
+GradeStructure.sync({ alter: true });
 GradeStructure.belongsTo(Classroom);
 Classroom.hasMany(GradeStructure);
-
-GradeStructure.sync({ alter: true });
 
 module.exports = GradeStructure;
