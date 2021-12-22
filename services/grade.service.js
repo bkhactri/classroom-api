@@ -1,4 +1,5 @@
 const Grade = require("../models/grade.model");
+const { Op } = require("sequelize");
 
 const gradeByStudentId = async (data) => {
   try {
@@ -26,7 +27,26 @@ const getBoardByClassId = async (classroomId) => {
   }
 };
 
+const finalizedColumn = async (data) => {
+  try {
+    return await Grade.update(
+      { status: "FINALIZED" },
+      {
+        where: {
+          [Op.and]: [
+            { classroomId: data.classroomId },
+            { gradeStructureId: data.gradeId },
+          ],
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
 module.exports = {
   gradeByStudentId,
   getBoardByClassId,
+  finalizedColumn,
 };

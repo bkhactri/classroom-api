@@ -125,6 +125,18 @@ const getGradeBoard = async (req, res, next) => {
   }
 };
 
+const finalizedGradeColumn = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    const queryResult = await gradeService.finalizedColumn(req.body);
+    if (queryResult) {
+      res.sendStatus(200);
+    }
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
 module.exports = {
   getGradeStructures,
   createGradeStructure,
@@ -133,4 +145,5 @@ module.exports = {
   deleteGradeStructure,
   gradeDraftSingleCell,
   getGradeBoard,
+  finalizedGradeColumn,
 };
