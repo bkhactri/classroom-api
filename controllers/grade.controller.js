@@ -116,10 +116,9 @@ const gradeDraftSingleCell = async (req, res, next) => {
 const getGradeBoard = async (req, res, next) => {
   const { classroomId } = req.params;
   try {
-    const result = await gradeService.getBoardByClassId(classroomId);
-    console.log(result, "result");
-    if (result) {
-      res.status(200).send(result);
+    const queryData = await gradeService.getBoardByClassId(classroomId);
+    if (queryData) {
+      res.status(200).send(queryData);
     }
   } catch (err) {
     res.sendStatus(500) && next(err);

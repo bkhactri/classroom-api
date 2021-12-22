@@ -18,7 +18,7 @@ const getBoardByClassId = async (classroomId) => {
   try {
     return await Grade.findAll({
       where: {
-        classroomId,
+        classroomId: classroomId,
       },
     });
   } catch (e) {
