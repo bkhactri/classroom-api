@@ -12,6 +12,7 @@ const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
 const multer = require("multer");
+const fs = require("fs");
 
 const connection = require("./utils/database/connection");
 const { checkMailConnection } = require("./utils/config/nodemailer.config");
@@ -57,7 +58,12 @@ const fileStorage = multer.diskStorage({
 app.use(
   multer({ storage: fileStorage }).fields([{ name: "file", maxCount: 1 }])
 );
-app.use("/files", express.static(path.join(__dirname, "files")));
+
+const filesDir = path.join(__dirname, "files");
+if (!fs.existsSync(filesDir)){
+  fs.mkdirSync(filesDir);
+}
+app.use("/files", express.static(filesDir));
 
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);

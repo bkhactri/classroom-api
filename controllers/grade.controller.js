@@ -1,6 +1,8 @@
 const gradeService = require("../services/grade.service");
 const gradeStructureService = require("../services/grade-structure.service");
 const participantService = require("../services/participant.service");
+const path = require("path");
+const fs = require("fs");
 
 const getGradeStructures = async (req, res, next) => {
   const classroomId = req.params.classroomId;
@@ -135,6 +137,51 @@ const finalizedGradeColumn = async (req, res, next) => {
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
+}
+
+const getTemplate = async (req, res, next) => {
+  try {
+    res.send(gradeService.getCSVTemplate());
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+}
+
+const uploadFile = async (req, res, next) => {
+  const fileInfo = req.files.file[0];
+  const filePath = path.join(process.cwd(), fileInfo.path);
+
+  try {
+    const csvResult = await gradeService.csv2JSON(filePath);
+
+    await gradeService.updateFromCsv(
+      csvResult,
+      req.body.gradeStructureId,
+      req.body.classroomId
+    );
+
+    fs.unlink(filePath, (err) => {
+      if (err) console.log(err);
+    });
+
+    const resData = csvResult.data.slice(1, csvResult.data.length - 1);
+
+    res.status(200).send(resData);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const exportGradeColumn = async (req, res, next) => {
+  const { classroomId, gradeStructureId } = req.params;
+
+  try {
+    const grades = await gradeService.getBoardByClassIdAndStructureId(classroomId, gradeStructureId);
+
+    res.send(gradeService.getCSVGrade(grades, ["Student ID", "Point"]));
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
 };
 
 module.exports = {
@@ -146,4 +193,7 @@ module.exports = {
   gradeDraftSingleCell,
   getGradeBoard,
   finalizedGradeColumn,
+  getTemplate,
+  uploadFile,
+  exportGradeColumn
 };

@@ -10,6 +10,12 @@ router.get(
   gradeController.getGradeStructures
 );
 
+router.get(
+  "/template",
+  authMiddleware.verifyToken,
+  gradeController.getTemplate
+);
+
 router.post(
   "/structure",
   authMiddleware.verifyToken,
@@ -39,6 +45,18 @@ router.post(
   authMiddleware.verifyToken,
   gradeController.gradeDraftSingleCell
 );
+
+router.post(
+  "/upload",
+  authMiddleware.verifyToken,
+  gradeController.uploadFile
+);
+
+router.get(
+  "/export/:classroomId/:gradeStructureId",
+  authMiddleware.verifyToken,
+  gradeController.exportGradeColumn
+)
 
 router.get(
   "/getGradeBoard/:classroomId",
