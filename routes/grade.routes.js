@@ -46,4 +46,10 @@ router.get(
   gradeController.getGradeBoard
 );
 
+router.put(
+  "/finalizedColumn",
+  authMiddleware.verifyToken,
+  gradeController.finalizedGradeColumn
+);
+
 module.exports = router;
