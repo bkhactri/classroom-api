@@ -14,6 +14,12 @@ router.post(
   "/upload",
   authMiddleware.verifyToken,
   studentIdenticationController.uploadFile
-)
+);
+
+router.get(
+  "/getByClass/:classroomId",
+  authMiddleware.verifyToken,
+  studentIdenticationController.getStudentsInClass
+);
 
 module.exports = router;

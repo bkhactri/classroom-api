@@ -33,7 +33,7 @@ app.use(session(SESSION_CONFIG));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -59,14 +59,12 @@ app.use(
 );
 app.use("/files", express.static(path.join(__dirname, "files")));
 
-
 app.use("/classroom", classroomRoutes);
 app.use("/auth", authRoutes);
 app.use("/account", userRoutes);
 app.use("/mail", mailRoutes);
 app.use("/grade", gradeRoutes);
 app.use("/student-identification", studentIdentificationRoutes);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

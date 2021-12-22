@@ -45,8 +45,21 @@ const updateFromCsv = (csvResult, classroomId) => {
   return Promise.all(updateRequests);
 };
 
+const getStudentsByClassId = async (classroomId) => {
+  try {
+    return await StudentIdentification.findAll({
+      where: {
+        classroomId,
+      },
+    });
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
 module.exports = {
   getCSVTemplate,
   csv2JSON,
   updateFromCsv,
+  getStudentsByClassId,
 };

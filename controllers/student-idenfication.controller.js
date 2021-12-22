@@ -8,7 +8,7 @@ const getTemplate = async (req, res, next) => {
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
-}
+};
 
 const uploadFile = async (req, res, next) => {
   const fileInfo = req.files.file[0];
@@ -17,19 +17,39 @@ const uploadFile = async (req, res, next) => {
   try {
     const csvResult = await studentIdentificationService.csv2JSON(filePath);
 
-    await studentIdentificationService.updateFromCsv(csvResult, req.body.classroomId);
+    await studentIdentificationService.updateFromCsv(
+      csvResult,
+      req.body.classroomId
+    );
 
     fs.unlink(filePath, (err) => {
-      if(err) console.log(err);
+      if (err) console.log(err);
     });
 
-    res.sendStatus(200);
+    const resData = csvResult.data.slice(1, csvResult.data.length - 1);
+
+    res.status(200).send(resData);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
-}
+};
+
+const getStudentsInClass = async (req, res, next) => {
+  const { classroomId } = req.params;
+
+  try {
+    const students = await studentIdentificationService.getStudentsByClassId(
+      classroomId
+    );
+
+    res.status(200).send(students);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
 
 module.exports = {
   getTemplate,
-  uploadFile
-}
+  uploadFile,
+  getStudentsInClass,
+};
