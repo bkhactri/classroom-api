@@ -103,10 +103,12 @@ const getBoardByClassIdAndStructureId = async (classroomId, gradeStructureId) =>
   }
 }
 
-const getCSVGrade = async (data, headers) => {
+const getCSVGrade = (data, headers) => {
   const dataToParse = [headers];
   data.forEach((item) => {
-    dataToParse.push([item.studentIdentificationId, item.point]);
+    if (item?.studentIdentificationId) {
+      dataToParse.push([item.studentIdentificationId, item.point || 0]);
+    }
   })
 
   const csv = papaparse.unparse(dataToParse);
