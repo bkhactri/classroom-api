@@ -46,8 +46,10 @@ const finalizedColumn = async (data) => {
     throw new Error(e.message);
   }
 };
-const getCSVTemplate = () => {
-  const csv = papaparse.unparse([["Student ID", "Point"]]);
+const getCSVTemplate = (studentIds) => {
+  const data = [["Student ID", "Point"]];
+  studentIds.forEach((id) => data.push([id]));
+  const csv = papaparse.unparse(data);
 
   return csv;
 };
@@ -63,7 +65,6 @@ const csv2JSON = (filePath) => {
 };
 
 const updateFromCsv = (csvResult, gradeStructureId, classroomId) => {
-  const recordNumber = csvResult.data.length;
   const firstField = csvResult.data[0][0] === "Student ID" ? "studentIdentificationId" : "point";
   const secondField = firstField === "studentIdentificationId" ? "point" : "studentIdentificationId";
 
@@ -103,13 +104,19 @@ const getBoardByClassIdAndStructureId = async (classroomId, gradeStructureId) =>
   }
 }
 
-const getCSVGrade = (data, headers) => {
-  const dataToParse = [headers];
-  data.forEach((item) => {
+const getCSVGrade = (grades, students, headers) => {
+  const initData = [headers];
+  grades.forEach((item) => {
     if (item?.studentIdentificationId) {
-      dataToParse.push([item.studentIdentificationId, item.point || 0]);
+      initData.push([item.studentIdentificationId, item.point || ""]);
     }
   })
+
+  const dataToParse = initData.concat(
+    students
+      .filter((student) => !initData.map((data) => data[0])?.includes(student.id))
+      .map((student) => [student.id])
+  )
 
   const csv = papaparse.unparse(dataToParse);
 

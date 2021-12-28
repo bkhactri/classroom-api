@@ -1,6 +1,7 @@
 const gradeService = require("../services/grade.service");
 const gradeStructureService = require("../services/grade-structure.service");
 const participantService = require("../services/participant.service");
+const studentIdentificationService = require("../services/student-identification.service");
 const path = require("path");
 const fs = require("fs");
 
@@ -140,8 +141,11 @@ const finalizedGradeColumn = async (req, res, next) => {
 }
 
 const getTemplate = async (req, res, next) => {
+  const classroomId = req.params.classroomId;
+
   try {
-    res.send(gradeService.getCSVTemplate());
+    const studentIdentifications = await studentIdentificationService.getStudentsByClassId(classroomId);
+    res.send(gradeService.getCSVTemplate(studentIdentifications.map((stdId) => stdId.id)));
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
@@ -177,8 +181,9 @@ const exportGradeColumn = async (req, res, next) => {
 
   try {
     const grades = await gradeService.getBoardByClassIdAndStructureId(classroomId, gradeStructureId);
+    const studentIdentifications = await studentIdentificationService.getStudentsByClassId(classroomId);
 
-    res.send(gradeService.getCSVGrade(grades, ["Student ID", "Point"]));
+    res.send(gradeService.getCSVGrade(grades, studentIdentifications, ["Student ID", "Point"]));
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
