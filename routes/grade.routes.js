@@ -11,7 +11,7 @@ router.get(
 );
 
 router.get(
-  "/template",
+  "/template/:classroomId",
   authMiddleware.verifyToken,
   gradeController.getTemplate
 );
