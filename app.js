@@ -13,6 +13,7 @@ const session = require("express-session");
 const cors = require("cors");
 const multer = require("multer");
 const fs = require("fs");
+const io = require("socket.io");
 
 const connection = require("./utils/database/connection");
 const { checkMailConnection } = require("./utils/config/nodemailer.config");
@@ -30,6 +31,7 @@ const { SESSION_CONFIG } = require("./utils/constants/index");
 
 const app = express();
 
+app.io = io;
 app.use(session(SESSION_CONFIG));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -60,7 +62,7 @@ app.use(
 );
 
 const filesDir = path.join(__dirname, "files");
-if (!fs.existsSync(filesDir)){
+if (!fs.existsSync(filesDir)) {
   fs.mkdirSync(filesDir);
 }
 app.use("/files", express.static(filesDir));
