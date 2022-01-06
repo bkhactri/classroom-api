@@ -11,11 +11,14 @@ router.post("/signup", authController.authSignup);
 
 router.post("/logout", authController.authLogout);
 
-router.get('/google/callback', authController.googleAuthCallback);
+router.get("/google/callback", authController.googleAuthCallback);
 
-router.get('/google', authController.googleAuthCall);
+router.get("/google", authController.googleAuthCall);
 
-router.get('/getUserAuthData', authController.getUserAuthData);
+router.get("/getUserAuthData", authController.getUserAuthData);
 
+router.post("/resetPassword", authController.sendMailResetPassword);
+
+router.post("/changePassword", authController.changePassword);
 
 module.exports = router;
