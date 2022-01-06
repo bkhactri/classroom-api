@@ -81,6 +81,73 @@ const mapStudentId = async (studentId, userId) => {
   }
 };
 
+const updateRefreshPasswordToken = async (email, token) => {
+  try {
+    await User.update(
+      { resetPwdToken: token, resetPwdTokenExpires: Date.now() + 3600000 },
+      {
+        where: {
+          email: email,
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const findUserWithValidResetToken = async (resetToken) => {
+  try {
+    const queryResult = await User.findOne({
+      where: {
+        resetPwdToken: resetToken,
+        resetPwdTokenExpires: { [Op.gt]: Date.now() },
+      },
+    });
+    return queryResult;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const updateUserPasswordAndClearToken = async (userId, newPassword) => {
+  try {
+    const hashedPassword = bcrypt.hashSync(
+      newPassword,
+      bcrypt.genSaltSync(12),
+      null
+    );
+
+    await User.update(
+      {
+        password: hashedPassword,
+        resetPwdToken: null,
+        resetPwdTokenExpires: null,
+      },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const checkEmailExist = async (email) => {
+  try {
+    const queryResult = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    return queryResult ? true : false;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
 module.exports = {
   getAccountInfo,
   updateAccountBasicInfo,
@@ -88,4 +155,8 @@ module.exports = {
   updateUserPassword,
   comparePassword,
   mapStudentId,
+  updateRefreshPasswordToken,
+  findUserWithValidResetToken,
+  updateUserPasswordAndClearToken,
+  checkEmailExist,
 };

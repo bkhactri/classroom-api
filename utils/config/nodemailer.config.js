@@ -9,9 +9,9 @@ const oauth2Client = new OAuth2(
 );
 
 oauth2Client.setCredentials({
-  refresh_token: process.env.MAIL_REFRESHTOKEN
+  refresh_token: process.env.MAIL_REFRESHTOKEN,
 });
-const accessToken = oauth2Client.getAccessToken()
+const accessToken = oauth2Client.getAccessToken();
 
 const transporter = nodemailer.createTransport({
   pool: true,
@@ -22,11 +22,11 @@ const transporter = nodemailer.createTransport({
     clientId: process.env.MAIL_CLIENTID,
     clientSecret: process.env.MAIL_CLIENTSECRET,
     refreshToken: process.env.MAIL_REFRESHTOKEN,
-    accessToken
+    accessToken,
   },
   tls: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 const checkMailConnection = () => {
@@ -71,7 +71,31 @@ const sendInvite = async (recipients, subject, role, inviteLink) => {
   return await sendMail(recipients, subject, htmlContent);
 };
 
+const sendRefreshPasswordEmail = async (recipient, resetLink) => {
+  const subject = "Reset Password for iClassroom";
+  const htmlContent = `
+  <h4>Hi ${recipient}</h4>
+  <p style="margin-bottom: 30px;">You recently request to reset your password for your iClassroom account.<br> Click the button below to reset it</p>
+  <a style="background: #111;
+      height: 60px;
+      padding: 10px 43px;
+      border: 0;
+      color: #fff;
+      text-transform: capitalize;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 0px;
+      margin-left: 100px;
+      text-decoration:none;" href="${resetLink}">Reset your password</a>
+  <p style="margin-top:30px">If you did not request a password reset, please ignore this email.<br>This password reset is only valid for the next 1 hour</p>
+  <p style="margin-top: 40px;">Thanks.<br>Admin iClassroom</p>
+  `;
+
+  return await sendMail(recipient, subject, htmlContent);
+};
+
 module.exports = {
   checkMailConnection,
   sendInvite,
+  sendRefreshPasswordEmail,
 };

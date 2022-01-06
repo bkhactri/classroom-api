@@ -29,6 +29,14 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  resetPwdToken: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  resetPwdTokenExpires: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
 });
 
 User.beforeSave((user) => {
