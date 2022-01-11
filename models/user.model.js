@@ -29,13 +29,18 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  resetPwdToken: {
+  token: {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  resetPwdTokenExpires: {
+  tokenExpires: {
     type: Sequelize.DATE,
     allowNull: true,
+  },
+  isActive: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
 });
 

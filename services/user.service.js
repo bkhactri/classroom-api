@@ -12,6 +12,7 @@ const getAccountInfo = async (userId) => {
       studentId: queryResult.dataValues.studentId,
       username: queryResult.dataValues.username,
       email: queryResult.dataValues.email,
+      isActive: queryResult.dataValues.isActive,
     });
   } catch (e) {
     throw new Error(e.message);
@@ -81,10 +82,10 @@ const mapStudentId = async (studentId, userId) => {
   }
 };
 
-const updateRefreshPasswordToken = async (email, token) => {
+const updateUserToken = async (email, token) => {
   try {
     await User.update(
-      { resetPwdToken: token, resetPwdTokenExpires: Date.now() + 3600000 },
+      { token: token, tokenExpires: Date.now() + 3600000 },
       {
         where: {
           email: email,
@@ -96,12 +97,13 @@ const updateRefreshPasswordToken = async (email, token) => {
   }
 };
 
-const findUserWithValidResetToken = async (resetToken) => {
+const findUserWithValidResetToken = async (token, email) => {
   try {
     const queryResult = await User.findOne({
       where: {
-        resetPwdToken: resetToken,
-        resetPwdTokenExpires: { [Op.gt]: Date.now() },
+        email: email,
+        token: token,
+        tokenExpires: { [Op.gt]: Date.now() },
       },
     });
     return queryResult;
@@ -121,8 +123,8 @@ const updateUserPasswordAndClearToken = async (userId, newPassword) => {
     await User.update(
       {
         password: hashedPassword,
-        resetPwdToken: null,
-        resetPwdTokenExpires: null,
+        token: null,
+        tokenExpires: null,
       },
       {
         where: {
@@ -155,7 +157,7 @@ module.exports = {
   updateUserPassword,
   comparePassword,
   mapStudentId,
-  updateRefreshPasswordToken,
+  updateUserToken,
   findUserWithValidResetToken,
   updateUserPasswordAndClearToken,
   checkEmailExist,
