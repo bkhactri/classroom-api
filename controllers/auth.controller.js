@@ -2,22 +2,29 @@ const passport = require("passport");
 const {
   generateAccessToken,
   generateRefreshToken,
-  generateRefreshPasswordToken,
+  generateCryptoToken,
 } = require("../services/auth.service");
 
 const {
-  updateRefreshPasswordToken,
+  updateUserToken,
   findUserWithValidResetToken,
   updateUserPasswordAndClearToken,
   checkEmailExist,
+  getAccountInfo,
 } = require("../services/user.service");
 
 const {
   sendRefreshPasswordEmail,
+  sendVerifyMail,
 } = require("../utils/config/nodemailer.config");
 
-const auth = async (req, res, next) => {
-  res.status(200).json(req.user.id);
+const refreshFetchUserInfo = async (req, res, next) => {
+  try {
+    const userInfo = await getAccountInfo(req.user.id);
+    res.status(200).json(userInfo);
+  } catch (error) {
+    res.sendStatus(500) && next(error);
+  }
 };
 
 const authLogin = async (req, res, next) => {
@@ -29,21 +36,39 @@ const authLogin = async (req, res, next) => {
     } else {
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
-      const { id, username, email } = user.dataValues;
-      const responseData = { id, username, email, accessToken, refreshToken };
+      const { id, username, email, isActive } = user.dataValues;
+      const responseData = {
+        id,
+        username,
+        email,
+        isActive,
+        accessToken,
+        refreshToken,
+      };
       res.status(200).send(responseData);
     }
   })(req, res, next);
 };
 
 const authSignup = async (req, res, next) => {
-  passport.authenticate("classroom.signup", function (err, user, info) {
+  passport.authenticate("classroom.signup", async function (err, user, info) {
     if (err) return res.status(500).send(err);
 
     if (info) {
       res.status(info.status).send(info.message);
     } else {
-      res.status(200).send(user.dataValues);
+      const verifyToken = await generateCryptoToken();
+      try {
+        await updateUserToken(user.email, verifyToken);
+        const verifyEmailLink = `${process.env.CLIENT_HOST}/verify-email/${verifyToken}`;
+        const mailingRes = await sendVerifyMail(user.email, verifyEmailLink);
+
+        if (mailingRes.accepted.length > 0) {
+          res.status(200).json(mailingRes);
+        }
+      } catch (error) {
+        res.sendStatus(500) && next(error);
+      }
     }
   })(req, res, next);
 };
@@ -92,8 +117,15 @@ const getUserAuthData = async (req, res, next) => {
   req.user.then((user) => {
     const accessToken = generateAccessToken(user.dataValues);
     const refreshToken = generateRefreshToken(user.dataValues);
-    const { id, username, email } = user.dataValues;
-    const responseData = { id, username, email, accessToken, refreshToken };
+    const { id, username, email, isActive } = user.dataValues;
+    const responseData = {
+      id,
+      username,
+      email,
+      isActive,
+      accessToken,
+      refreshToken,
+    };
     res.status(200).send(responseData);
   });
 };
@@ -109,10 +141,10 @@ const sendMailResetPassword = async (req, res, next) => {
   }
 
   if (isEmailExist) {
-    const refreshPasswordToken = await generateRefreshPasswordToken();
+    const refreshPasswordToken = await generateCryptoToken();
 
     try {
-      await updateRefreshPasswordToken(email, refreshPasswordToken);
+      await updateUserToken(email, refreshPasswordToken);
       const resetPasswordLink = `${process.env.CLIENT_HOST}/change-password/${refreshPasswordToken}`;
 
       const mailingRes = await sendRefreshPasswordEmail(
@@ -130,9 +162,9 @@ const sendMailResetPassword = async (req, res, next) => {
 };
 
 const changePassword = async (req, res, next) => {
-  const { resetToken, password } = req.body;
+  const { email, resetToken, password } = req.body;
 
-  const user = await findUserWithValidResetToken(resetToken);
+  const user = await findUserWithValidResetToken(resetToken, email);
 
   if (user) {
     try {
@@ -147,8 +179,56 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+const verifyEmail = async (req, res, next) => {
+  const { email, verifyToken } = req.body;
+
+  findUserWithValidResetToken(verifyToken, email)
+    .then((user) => {
+      user.isActive = true;
+      user.token = null;
+      user.tokenExpires = null;
+      return user.save();
+    })
+    .then((user) => {
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        const accessToken = generateAccessToken(req.user.dataValues);
+        const refreshToken = generateRefreshToken(req.user.dataValues);
+        const { id, username, email, isActive } = req.user.dataValues;
+        const responseData = {
+          id,
+          username,
+          email,
+          isActive,
+          accessToken,
+          refreshToken,
+        };
+        res.status(200).send(responseData);
+      });
+    })
+    .catch((error) => res.status(500).send(error));
+};
+
+const sendVerifyEmail = async (req, res, next) => {
+  const { email } = req.body;
+  const verifyToken = await generateCryptoToken();
+  try {
+    await updateUserToken(email, verifyToken);
+    const verifyEmailLink = `${process.env.CLIENT_HOST}/verify-email/${verifyToken}`;
+    const mailingRes = await sendVerifyMail(email, verifyEmailLink);
+
+    if (mailingRes.accepted.length > 0) {
+      res.status(200).json(mailingRes);
+    }
+  } catch (error) {
+    res.sendStatus(500) && next(error);
+  }
+};
+
 module.exports = {
-  auth,
+  refreshFetchUserInfo,
   authLogin,
   authSignup,
   authLogout,
@@ -157,4 +237,6 @@ module.exports = {
   getUserAuthData,
   sendMailResetPassword,
   changePassword,
+  verifyEmail,
+  sendVerifyEmail,
 };

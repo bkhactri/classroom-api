@@ -9,7 +9,7 @@ const generateRefreshToken = (userData) => {
   return jwt.sign(userData, process.env.JWT_SECRET_KEY_REFRESH_TOKEN);
 };
 
-const generateRefreshPasswordToken = async () => {
+const generateCryptoToken = async () => {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(32, (err, buffer) => {
       if (err) reject(err);
@@ -22,5 +22,5 @@ const generateRefreshPasswordToken = async () => {
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
-  generateRefreshPasswordToken,
+  generateCryptoToken,
 };

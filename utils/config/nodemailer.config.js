@@ -88,8 +88,31 @@ const sendRefreshPasswordEmail = async (recipient, resetLink) => {
       margin-left: 100px;
       text-decoration:none;" href="${resetLink}">Reset your password</a>
   <p style="margin-top:30px">If you did not request a password reset, please ignore this email.<br>This password reset is only valid for the next 1 hour</p>
-  <p style="margin-top: 40px;">Thanks.<br>Admin iClassroom</p>
+  <p style="margin-top: 40px;">Thanks.<br>Admin eClassroom</p>
   `;
+
+  return await sendMail(recipient, subject, htmlContent);
+};
+
+const sendVerifyMail = async (recipient, verifyLink) => {
+  const subject = "Verify Email for iClassroom";
+  const htmlContent = `
+  <h4>Verify your email to finish signing up for eClassroom</h4>
+  <p style="margin-top: 30px;">Thanks yor for joining eClassroom.
+  <br>Please confirm that ${recipient} is your email address by clicking on the button below
+  <br>This link will expire after 1 hour</p>
+  <a style="background: #111;
+      height: 60px;
+      padding: 10px 43px;
+      border: 0;
+      color: #fff;
+      text-transform: capitalize;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 0px;
+      margin-left: 100px;
+      text-decoration:none;" href="${verifyLink}">Verify now</a>
+  <p style="margin-top: 40px;">Thanks.<br>Admin eClassroom</p>`;
 
   return await sendMail(recipient, subject, htmlContent);
 };
@@ -98,4 +121,5 @@ module.exports = {
   checkMailConnection,
   sendInvite,
   sendRefreshPasswordEmail,
+  sendVerifyMail,
 };
