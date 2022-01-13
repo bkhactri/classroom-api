@@ -123,6 +123,19 @@ const getCSVGrade = (grades, students, headers) => {
   return csv;
 }
 
+const getGradesForStudent = async (classroomId, studentIdentificationId) => {
+  try {
+    return await Grade.findAll({
+      where: {
+        classroomId,
+        studentIdentificationId
+      },
+    });
+  } catch (e) {
+    throw new Error(e.message);
+  }
+}
+
 module.exports = {
   gradeByStudentId,
   getBoardByClassId,
@@ -131,5 +144,6 @@ module.exports = {
   csv2JSON,
   updateFromCsv,
   getBoardByClassIdAndStructureId,
-  getCSVGrade
+  getCSVGrade,
+  getGradesForStudent
 };

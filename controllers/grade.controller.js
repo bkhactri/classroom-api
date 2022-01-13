@@ -9,16 +9,8 @@ const getGradeStructures = async (req, res, next) => {
   const classroomId = req.params.classroomId;
 
   try {
-    const participant = await participantService.findById(
-      req.user.id,
-      classroomId
-    );
+    const gradeStructures = await gradeStructureService.getAll(classroomId);
 
-    let gradeStructures = [];
-
-    if (["OWNER", "TEACHER"].includes(participant.role)) {
-      gradeStructures = await gradeStructureService.getAll(classroomId);
-    }
     return res.status(200).send(gradeStructures);
   } catch (err) {
     res.sendStatus(500) && next(err);
@@ -189,6 +181,18 @@ const exportGradeColumn = async (req, res, next) => {
   }
 };
 
+const getGradesForStudent = async (req, res, next) => {
+  const { classroomId, studentIdentificationId } = req.params;
+
+  try {
+    const grades = await gradeService.getGradesForStudent(classroomId, studentIdentificationId);
+
+    res.send(grades);
+  } catch(err) {
+    res.sendStatus(500) && next(err);
+  }
+}
+
 module.exports = {
   getGradeStructures,
   createGradeStructure,
@@ -200,5 +204,6 @@ module.exports = {
   finalizedGradeColumn,
   getTemplate,
   uploadFile,
-  exportGradeColumn
+  exportGradeColumn,
+  getGradesForStudent
 };

@@ -70,4 +70,10 @@ router.put(
   gradeController.finalizedGradeColumn
 );
 
+router.get(
+  "/myGrade/:classroomId/:studentIdentificationId",
+  authMiddleware.verifyToken,
+  gradeController.getGradesForStudent
+)
+
 module.exports = router;
