@@ -1,4 +1,5 @@
 const userService = require("../services/user.service");
+const participantService = require("../services/participant.service");
 
 const getUserAccountInfo = async (req, res, next) => {
   try {
@@ -72,10 +73,16 @@ const mapStudentId = async (req, res, next) => {
 };
 
 const getUserDetail = async (req, res, next) => {
-  const { userId } = req.params;
+  const { classroomId, userId } = req.params;
   try {
     const userInfo = await userService.getAccountInfo(userId);
-    res.status(200).send(userInfo);
+    const participantInfo = await participantService.findById(
+      userId,
+      classroomId
+    );
+
+    const responseData = { ...userInfo, role: participantInfo.dataValues.role };
+    res.status(200).send(responseData);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
