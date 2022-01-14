@@ -13,6 +13,7 @@ const GoogleUser = sequelize.define("gooleUser", {
   },
 });
 
-GoogleUser.sync();
+// Use below code if you edit Schema
+// GoogleUser.sync({alter: true});
 
 module.exports = GoogleUser;

@@ -41,6 +41,7 @@ Grade.belongsTo(StudentIdenfication);
 Classroom.hasMany(Grade);
 StudentIdenfication.hasMany(Grade);
 
-Grade.sync();
+// Use below code if you edit Schema
+// Grade.sync({alter: true});
 
 module.exports = Grade;

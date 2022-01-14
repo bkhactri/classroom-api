@@ -62,6 +62,7 @@ User.prototype.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-User.sync();
+// Use below code if you edit Schema
+// User.sync({alter: true});
 
 module.exports = User;
