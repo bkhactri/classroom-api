@@ -27,6 +27,6 @@ const GradeStructure = sequelize.define("grade_structure", {
 GradeStructure.belongsTo(Classroom);
 Classroom.hasMany(GradeStructure);
 
-GradeStructure.sync({ alter: true });
+GradeStructure.sync();
 
 module.exports = GradeStructure;

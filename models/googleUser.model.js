@@ -13,6 +13,6 @@ const GoogleUser = sequelize.define("gooleUser", {
   },
 });
 
-GoogleUser.sync({ alter: true });
+GoogleUser.sync();
 
 module.exports = GoogleUser;
