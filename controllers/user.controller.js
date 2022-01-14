@@ -71,9 +71,20 @@ const mapStudentId = async (req, res, next) => {
   }
 };
 
+const getUserDetail = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const userInfo = await userService.getAccountInfo(userId);
+    res.status(200).send(userInfo);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
 module.exports = {
   getUserAccountInfo,
   updateUserBasicInfo,
   updateUserPassword,
   mapStudentId,
+  getUserDetail,
 };

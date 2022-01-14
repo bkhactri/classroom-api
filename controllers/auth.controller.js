@@ -36,12 +36,13 @@ const authLogin = async (req, res, next) => {
     } else {
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
-      const { id, username, email, isActive } = user.dataValues;
+      const { id, username, email, isActive, avatarUrl } = user.dataValues;
       const responseData = {
         id,
         username,
         email,
         isActive,
+        avatarUrl,
         accessToken,
         refreshToken,
       };
@@ -117,12 +118,13 @@ const getUserAuthData = async (req, res, next) => {
   req.user.then((user) => {
     const accessToken = generateAccessToken(user.dataValues);
     const refreshToken = generateRefreshToken(user.dataValues);
-    const { id, username, email, isActive } = user.dataValues;
+    const { id, username, email, isActive, avatarUrl } = user.dataValues;
     const responseData = {
       id,
       username,
       email,
       isActive,
+      avatarUrl,
       accessToken,
       refreshToken,
     };
@@ -196,12 +198,14 @@ const verifyEmail = async (req, res, next) => {
         }
         const accessToken = generateAccessToken(req.user.dataValues);
         const refreshToken = generateRefreshToken(req.user.dataValues);
-        const { id, username, email, isActive } = req.user.dataValues;
+        const { id, username, email, isActive, avatarUrl } =
+          req.user.dataValues;
         const responseData = {
           id,
           username,
           email,
           isActive,
+          avatarUrl,
           accessToken,
           refreshToken,
         };

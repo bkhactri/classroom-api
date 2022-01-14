@@ -28,6 +28,10 @@ const Classroom = sequelize.define("classroom", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  authorId: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   classCode: {
     type: Sequelize.STRING,
     allowNull: true,
