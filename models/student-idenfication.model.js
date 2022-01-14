@@ -24,6 +24,7 @@ const StudentIdentification = sequelize.define("student_identification", {
 StudentIdentification.belongsTo(Classroom);
 Classroom.hasMany(StudentIdentification);
 
-StudentIdentification.sync();
+// Use below code if you edit Schema
+// StudentIdentification.sync({alter: true});
 
 module.exports = StudentIdentification;

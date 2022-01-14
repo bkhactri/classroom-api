@@ -21,6 +21,7 @@ Participant.belongsTo(User);
 Classroom.hasMany(Participant);
 Participant.belongsTo(Classroom);
 
-Participant.sync();
+// Use below code if you edit Schema
+// Participant.sync({alter: true});
 
 module.exports = Participant;
