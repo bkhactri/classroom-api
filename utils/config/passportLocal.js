@@ -1,6 +1,7 @@
 const passport = require("passport");
 const User = require("../../models/user.model");
 const LocalStrategy = require("passport-local").Strategy;
+const md5 = require("md5");
 
 passport.serializeUser(function (user, done) {
   done(null, user.id);
@@ -58,6 +59,7 @@ passport.use(
           username: req.body.username,
           email: email,
           password: password,
+          avatarUrl: `https://gravatar.com/avatar/${md5(email)}?d=identicon`,
         };
 
         User.create(userDataForSignUp)

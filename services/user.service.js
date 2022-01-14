@@ -13,6 +13,7 @@ const getAccountInfo = async (userId) => {
       username: queryResult.dataValues.username,
       email: queryResult.dataValues.email,
       isActive: queryResult.dataValues.isActive,
+      avatarUrl: queryResult.dataValues.avatarUrl,
     });
   } catch (e) {
     throw new Error(e.message);

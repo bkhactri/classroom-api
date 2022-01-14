@@ -42,6 +42,10 @@ const User = sequelize.define("user", {
     allowNull: false,
     defaultValue: false,
   },
+  avatarUrl: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 });
 
 User.beforeSave((user) => {

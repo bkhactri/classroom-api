@@ -4,6 +4,12 @@ const authMiddleware = require("../middleware/authenticationCheck");
 
 const router = express.Router();
 
+router.get(
+  "/info/:userId",
+  authMiddleware.verifyToken,
+  userController.getUserDetail
+);
+
 router.get("/", authMiddleware.verifyToken, userController.getUserAccountInfo);
 
 router.put(

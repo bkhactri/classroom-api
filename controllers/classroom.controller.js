@@ -8,6 +8,7 @@ const createNewClass = async (req, res, next) => {
     subject: req.body.subject,
     room: req.body.room ? req.body.room : null,
     author: req.user.username,
+    authorId: req.user.id,
   };
 
   try {
@@ -56,7 +57,6 @@ const getClass = async (req, res, next) => {
 const getParticipantByClassID = async (req, res, next) => {
   try {
     const classID = req.query.classroomID;
-    console.log("classid", classID);
     const participants = await participantService.findByClassID(classID);
 
     res.status(200).json(participants);
