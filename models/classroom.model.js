@@ -38,6 +38,6 @@ const Classroom = sequelize.define("classroom", {
   },
 });
 
-Classroom.sync({ alter: true });
+Classroom.sync();
 
 module.exports = Classroom;
