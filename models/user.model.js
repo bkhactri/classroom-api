@@ -1,6 +1,7 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../utils/database/connection");
 const bcrypt = require("bcryptjs");
+const StudentIdentification = require("./student-idenfication.model");
 
 const User = sequelize.define("user", {
   id: {
@@ -42,6 +43,22 @@ const User = sequelize.define("user", {
     allowNull: false,
     defaultValue: false,
   },
+  isBan: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  role: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: "NORMAL",
+  },
+  // userRole: {
+  //   type: Sequelize.ENUM,
+  //   values: ["NORMAL", "ADMIN"],
+  //   allowNull: false,
+  //   defaultValue: "NORMAL"
+  // },
 });
 
 User.beforeSave((user) => {

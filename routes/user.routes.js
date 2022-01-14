@@ -24,4 +24,40 @@ router.post(
   userController.mapStudentId
 );
 
+router.get(
+  "/getAllUsers", 
+  authMiddleware.verifyToken, 
+  userController.getAllUsers
+  );
+
+router.get(
+  "/getAllAdmins", 
+  authMiddleware.verifyToken, 
+  userController.getAllAdmins
+  );
+
+router.put(
+  "/updateBanStatus",
+  authMiddleware.verifyToken,
+  userController.updateBanStatus
+);
+
+router.get(
+  "/userInfo/:userID",
+  authMiddleware.verifyToken,
+  userController.getUserInfo
+);
+
+router.put(
+  "/updateAdminStatus",
+  authMiddleware.verifyToken,
+  userController.updateAdminStatus
+);
+
+router.get(
+  "/userRole",
+  authMiddleware.verifyToken,
+  userController.getUserRole
+);
+
 module.exports = router;

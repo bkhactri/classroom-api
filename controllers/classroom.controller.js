@@ -141,6 +141,15 @@ const saveClass = async (req, res, next) => {
   }
 };
 
+const getAllClasses = async (req, res, next) => {
+  try {
+    const classrooms = await classroomService.findAll();
+    res.status(200).json(classrooms);
+  } catch (err) {
+    res.sendStatus(404) && next(err);
+  }
+};
+
 module.exports = {
   createNewClass,
   getClasses,
@@ -149,4 +158,5 @@ module.exports = {
   joinClass,
   getParticipantByClassID,
   saveClass,
+  getAllClasses,
 };
