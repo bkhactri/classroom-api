@@ -33,7 +33,6 @@ passport.use(
             status: 400,
             message: "Incorrect Password",
           });
-
         return done(null, user);
       });
     }

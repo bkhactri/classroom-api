@@ -5,6 +5,18 @@ const authMiddleware = require("../middleware/authenticationCheck");
 const router = express.Router();
 
 router.get(
+  "/allClassrooms",
+  authMiddleware.verifyAdmin,
+  classroomController.getAllClasses
+);
+
+router.get(
+  "/getClassroom/:classroomID",
+  authMiddleware.verifyAdmin,
+  classroomController.getClassroomByID
+);
+
+router.get(
   "/get-all",
   authMiddleware.verifyToken,
   classroomController.getClasses

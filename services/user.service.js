@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 
 const getAccountInfo = async (userId) => {
   try {
+    console.log('userid', userId);
     const queryResult = await User.findByPk(userId);
     return (resData = {
       id: queryResult.dataValues.id,
@@ -151,6 +152,77 @@ const checkEmailExist = async (email) => {
   }
 };
 
+const getAllUsers = async () => {
+  return await User.findAll();
+}
+
+const getAllAdmins = async () => {
+  return await User.findAll({
+    where: {
+      role: "ADMIN"
+    }
+  });
+}
+
+const updateBanStatus = async (id, newStatus) => {
+  try {
+    await User.update(
+      { isBan: newStatus },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const getUserInfo = async (userId) => {
+  try {
+    const queryResult = await User.findByPk(userId);
+    return (resData = {
+      id: queryResult.dataValues.id,
+      displayName: queryResult.dataValues.displayName,
+      studentId: queryResult.dataValues.studentId,
+      username: queryResult.dataValues.username,
+      email: queryResult.dataValues.email,
+      isActive: queryResult.dataValues.isActive,
+      isBan: queryResult.dataValues.isBan,
+      role: queryResult.dataValues.role,
+      createdAt: queryResult.dataValues.createdAt,
+    });
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const updateAdminiStatus = async (id, newStatus) => {
+  try {
+    await User.update(
+      { role: newStatus },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+const getUserRole = async (userId) => {
+  try {
+    const queryResult = await User.findByPk(userId);
+    return queryResult.role;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+
 module.exports = {
   getAccountInfo,
   updateAccountBasicInfo,
@@ -162,4 +234,10 @@ module.exports = {
   findUserWithValidResetToken,
   updateUserPasswordAndClearToken,
   checkEmailExist,
+  getAllUsers,
+  getAllAdmins,
+  updateBanStatus,
+  getUserInfo,
+  updateAdminiStatus,
+  getUserRole,
 };

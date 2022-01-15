@@ -88,10 +88,88 @@ const getUserDetail = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const getAllAdmins = async (req, res, next) => {
+  try {
+
+    const users = await userService.getAllAdmins();
+    res.status(200).json(users);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const updateBanStatus = async (req, res, next) => {
+
+  const id = req.body.userID;
+  const isBan = req.body.newBanStatus;
+
+  try {
+    await userService.updateBanStatus(id, isBan);
+
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const updateAdminStatus = async (req, res, next) => {
+
+  const id = req.body.userID;
+  const role = req.body.newAdminStatus;
+
+  try {
+    await userService.updateAdminiStatus(id, role);
+
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const getUserInfo = async (req, res, next) => {
+  try {
+    const id = req.params.userID;
+
+    if (req.user.role !== "ADMIN"){
+      return res.status(404);
+    }
+
+    const userInfo = await userService.getUserInfo(id);
+    res.status(200).json(userInfo);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const getUserRole = async (req, res, next) => {
+  try {
+    const role = await userService.getUserRole(req.user.id);
+    res.status(200).json(role);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+
 module.exports = {
   getUserAccountInfo,
   updateUserBasicInfo,
   updateUserPassword,
   mapStudentId,
   getUserDetail,
+  getAllUsers,
+  getAllAdmins,
+  updateBanStatus,
+  getUserInfo,
+  updateAdminStatus,
+  getUserRole,
 };
