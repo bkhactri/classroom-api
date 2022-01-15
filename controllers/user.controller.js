@@ -71,16 +71,9 @@ const mapStudentId = async (req, res, next) => {
   }
 };
 
-const checkAdminAuthen = (req, res) => {
-  if (req.user.role !== "ADMIN"){
-    res.status(404);
-  }
-} 
 
 const getAllUsers = async (req, res, next) => {
   try {
-    checkAdminAuthen(req, res);
-
     const users = await userService.getAllUsers();
     res.status(200).json(users);
   } catch (err) {
@@ -90,7 +83,6 @@ const getAllUsers = async (req, res, next) => {
 
 const getAllAdmins = async (req, res, next) => {
   try {
-    checkAdminAuthen(req, res);
 
     const users = await userService.getAllAdmins();
     res.status(200).json(users);
@@ -103,8 +95,6 @@ const updateBanStatus = async (req, res, next) => {
 
   const id = req.body.userID;
   const isBan = req.body.newBanStatus;
-  checkAdminAuthen(req, res);
-
 
   try {
     await userService.updateBanStatus(id, isBan);
@@ -119,7 +109,6 @@ const updateAdminStatus = async (req, res, next) => {
 
   const id = req.body.userID;
   const role = req.body.newAdminStatus;
-  checkAdminAuthen(req, res);
 
   try {
     await userService.updateAdminiStatus(id, role);
@@ -135,7 +124,7 @@ const getUserInfo = async (req, res, next) => {
     const id = req.params.userID;
 
     if (req.user.role !== "ADMIN"){
-      res.status(404);
+      return res.status(404);
     }
 
     const userInfo = await userService.getUserInfo(id);

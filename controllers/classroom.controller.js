@@ -150,6 +150,22 @@ const getAllClasses = async (req, res, next) => {
   }
 };
 
+const getClassroomByID = async (req, res, next) => {
+  const classroomID = req.params.classroomID;
+
+  try {
+    const classroom = await classroomService.findById(classroomID);
+    if (!classroom) {
+      return res.sendStatus(404);
+    }
+
+    res.status(200).json(classroom);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+
 module.exports = {
   createNewClass,
   getClasses,
@@ -159,4 +175,5 @@ module.exports = {
   getParticipantByClassID,
   saveClass,
   getAllClasses,
+  getClassroomByID,
 };

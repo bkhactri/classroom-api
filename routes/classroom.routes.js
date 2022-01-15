@@ -6,8 +6,14 @@ const router = express.Router();
 
 router.get(
   "/allClassrooms",
-  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
   classroomController.getAllClasses
+);
+
+router.get(
+  "/getClassroom/:classroomID",
+  authMiddleware.verifyAdmin,
+  classroomController.getClassroomByID
 );
 
 router.get(

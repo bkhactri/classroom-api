@@ -37,6 +37,7 @@ const authLogin = async (req, res, next) => {
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
       const { id, username, email, isActive } = user.dataValues;
+      console.log('user', user);
       const responseData = {
         id,
         username,

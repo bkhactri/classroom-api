@@ -26,37 +26,37 @@ router.post(
 
 router.get(
   "/getAllUsers", 
-  authMiddleware.verifyToken, 
+  authMiddleware.verifyAdmin, 
   userController.getAllUsers
   );
 
 router.get(
   "/getAllAdmins", 
-  authMiddleware.verifyToken, 
+  authMiddleware.verifyAdmin, 
   userController.getAllAdmins
   );
 
 router.put(
   "/updateBanStatus",
-  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
   userController.updateBanStatus
 );
 
 router.get(
   "/userInfo/:userID",
-  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
   userController.getUserInfo
 );
 
 router.put(
   "/updateAdminStatus",
-  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
   userController.updateAdminStatus
 );
 
 router.get(
   "/userRole",
-  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
   userController.getUserRole
 );
 
