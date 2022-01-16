@@ -64,9 +64,12 @@ const csv2JSON = (filePath) => {
   });
 };
 
-const updateFromCsv = (csvResult, gradeStructureId, classroomId) => {
+const updateFromCsv = (csvResult, gradeStructureId, classroomId, maximumPoint) => {
   const firstField = csvResult.data[0][0] === "Student ID" ? "studentIdentificationId" : "point";
   const secondField = firstField === "studentIdentificationId" ? "point" : "studentIdentificationId";
+  const pointIndex = firstField === "studentIdentificationId" ? 1 : 0;
+
+  console.log("h=>", maximumPoint);
 
   const updateRequests = [];
   csvResult.data
@@ -74,7 +77,7 @@ const updateFromCsv = (csvResult, gradeStructureId, classroomId) => {
       return item[0] && item[1];
     })
     .forEach((item, index) => {
-      if (index === 0) {
+      if (index === 0 || Number(item[pointIndex]) > Number(maximumPoint)) {
         return;
       }
 

@@ -149,11 +149,13 @@ const uploadFile = async (req, res, next) => {
 
   try {
     const csvResult = await gradeService.csv2JSON(filePath);
+    const gradeStructure = await gradeStructureService.findById(req.body.gradeStructureId);
 
     await gradeService.updateFromCsv(
       csvResult,
       req.body.gradeStructureId,
-      req.body.classroomId
+      req.body.classroomId,
+      gradeStructure.point
     );
 
     fs.unlink(filePath, (err) => {

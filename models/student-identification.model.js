@@ -17,14 +17,13 @@ const StudentIdentification = sequelize.define("student_identification", {
   },
   name: {
     type: Sequelize.STRING,
-    allowNull: false,
-  },
+    allowNull: false
+  }
 });
 
 StudentIdentification.belongsTo(Classroom);
 Classroom.hasMany(StudentIdentification);
 
-// Use below code if you edit Schema
-// StudentIdentification.sync({alter: true});
+// StudentIdentification.sync({ alter: true });
 
 module.exports = StudentIdentification;

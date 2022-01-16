@@ -1,6 +1,6 @@
 const express = require("express");
 const authMiddleware = require("../middleware/authenticationCheck");
-const studentIdenticationController = require("../controllers/student-idenfication.controller");
+const studentIdenticationController = require("../controllers/student-identification.controller");
 
 const router = express.Router();
 
@@ -21,5 +21,11 @@ router.get(
   authMiddleware.verifyToken,
   studentIdenticationController.getStudentsInClass
 );
+
+router.get(
+  "/:studentId",
+  authMiddleware.verifyToken,
+  studentIdenticationController.getStudentById
+)
 
 module.exports = router;
