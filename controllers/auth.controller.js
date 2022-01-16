@@ -36,8 +36,7 @@ const authLogin = async (req, res, next) => {
     } else {
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
-      const { id, username, email, isActive } = user.dataValues;
-      console.log('user', user);
+      const { id, username, email, isActive, avatarUrl } = user.dataValues;
       const responseData = {
         id,
         username,
@@ -115,7 +114,6 @@ const googleAuthCallback = (req, res, next) => {
 };
 
 const getUserAuthData = async (req, res, next) => {
-  // console.log('req.user', req.user);
   req.user.then((user) => {
     const accessToken = generateAccessToken(user.dataValues);
     const refreshToken = generateRefreshToken(user.dataValues);
