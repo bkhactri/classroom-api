@@ -1,4 +1,5 @@
 const studentIdentificationService = require("../services/student-identification.service");
+const userService = require("../services/user.service");
 const path = require("path");
 const fs = require("fs");
 
@@ -48,8 +49,27 @@ const getStudentsInClass = async (req, res, next) => {
   }
 };
 
+const getStudentById = async (req, res, next) => {
+  const { studentId } = req.params;
+
+  try {
+    const accountInfo = await userService.getAccountInfo(req.user.id);
+
+    if (accountInfo.studentId !== studentId) {
+      return res.sendStatus(403);
+    }
+
+    const student = await studentIdentificationService.getStudentById(studentId);
+
+    res.status(200).send(student);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+}
+
 module.exports = {
   getTemplate,
   uploadFile,
   getStudentsInClass,
+  getStudentById
 };

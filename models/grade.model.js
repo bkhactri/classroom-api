@@ -2,7 +2,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = require("../utils/database/connection");
 
 const Classroom = require("./classroom.model");
-const StudentIdenfication = require("./student-idenfication.model");
+const StudentIdentification = require("./student-identification.model");
 const GradeStructure = require("./grade-structure.model");
 
 const Grade = sequelize.define("grade", {
@@ -18,13 +18,11 @@ const Grade = sequelize.define("grade", {
   classroomId: {
     primaryKey: true,
     type: Sequelize.UUID,
-    defaultValue: Sequelize.UUIDV4,
     allowNull: false,
   },
   gradeStructureId: {
     primaryKey: true,
     type: Sequelize.UUID,
-    defaultValue: Sequelize.UUIDV4,
     allowNull: false,
   },
   studentIdentificationId: {
@@ -36,10 +34,11 @@ const Grade = sequelize.define("grade", {
 
 Grade.belongsTo(Classroom);
 Grade.belongsTo(GradeStructure);
-Grade.belongsTo(StudentIdenfication);
+Grade.belongsTo(StudentIdentification);
 
 Classroom.hasMany(Grade);
-StudentIdenfication.hasMany(Grade);
+GradeStructure.hasMany(Grade);
+StudentIdentification.hasMany(Grade);
 
 // Use below code if you edit Schema
 // Grade.sync({alter: true});

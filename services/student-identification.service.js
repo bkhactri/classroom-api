@@ -1,6 +1,6 @@
 const papaparse = require("papaparse");
 const fs = require("fs");
-const StudentIdentification = require("../models/student-idenfication.model");
+const StudentIdentification = require("../models/student-identification.model");
 
 const getCSVTemplate = () => {
   const csv = papaparse.unparse([["Student ID", "Fullname"]]);
@@ -57,9 +57,18 @@ const getStudentsByClassId = async (classroomId) => {
   }
 };
 
+const getStudentById = async (studentId) => {
+  try {
+    return await StudentIdentification.findByPk(studentId);
+  } catch (e) {
+    throw new Error(e.message);
+  }
+}
+
 module.exports = {
   getCSVTemplate,
   csv2JSON,
   updateFromCsv,
   getStudentsByClassId,
+  getStudentById
 };

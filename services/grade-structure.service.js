@@ -21,6 +21,14 @@ const create = async (data, classroomId) => {
   }
 };
 
+const findById = async (gradeStructureId) => {
+  try {
+    return await GradeStructure.findByPk(gradeStructureId);
+  } catch (e) {
+    throw new Error(e.message);
+  }
+}
+
 const updateById = async (gradeStructureId, gradeStructure) => {
   try {
     return await GradeStructure.update(gradeStructure, {
@@ -54,6 +62,7 @@ const deleteById = async (gradeStructureId) => {
 
 module.exports = {
   create,
+  findById,
   updateById,
   getAll,
   deleteById,
