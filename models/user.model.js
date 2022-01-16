@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../utils/database/connection");
 const bcrypt = require("bcryptjs");
-const StudentIdentification = require("./student-idenfication.model");
+const StudentIdentification = require("./student-identification.model");
 
 const User = sequelize.define("user", {
   id: {
