@@ -75,9 +75,7 @@ const getClassInviteInfo = async (req, res, next) => {
         : await classroomService.findByClassCode(code);
 
     if (!classroom) {
-      return res
-        .status(400)
-        .send("No class found with the provided id and code");
+      return res.status(400).send("error.noClassFoundWithId");
     }
 
     const participant = await participantService.findById(
@@ -85,7 +83,7 @@ const getClassInviteInfo = async (req, res, next) => {
       classroom.id
     );
     if (participant) {
-      return res.status(400).send("You are already in the classroom");
+      return res.status(400).send("error.alreadyInClassroom");
     }
 
     const role = classroomService.getClassRole(code, classroom.classCode);
@@ -111,7 +109,7 @@ const joinClass = async (req, res, next) => {
       classroom.id
     );
     if (participant) {
-      return res.status(400).send("You are already in the classroom");
+      return res.status(400).send("error.alreadyInClassroom");
     }
 
     const role = classroomService.getClassRole(code, classroom.classCode);
@@ -164,7 +162,6 @@ const getClassroomByID = async (req, res, next) => {
     res.sendStatus(500) && next(err);
   }
 };
-
 
 module.exports = {
   createNewClass,
