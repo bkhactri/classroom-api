@@ -26,12 +26,15 @@ passport.use(
         if (err) return done(err);
 
         if (!user)
-          return done(null, false, { status: 400, message: "User not found" });
+          return done(null, false, {
+            status: 400,
+            message: "error.userNotFound",
+          });
 
         if (!user.comparePassword(password))
           return done(null, false, {
             status: 400,
-            message: "Incorrect Password",
+            message: "error.incorrectPassword",
           });
         return done(null, user);
       });
@@ -52,7 +55,10 @@ passport.use(
         if (err) return done(err);
 
         if (user)
-          return done(null, false, { status: 400, message: "Email is taken" });
+          return done(null, false, {
+            status: 400,
+            message: "error.takenEmail",
+          });
 
         const userDataForSignUp = {
           username: req.body.username,

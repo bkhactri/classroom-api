@@ -21,7 +21,7 @@ const updateUserBasicInfo = async (req, res, next) => {
         req.user.id
       );
       if (emailExist) {
-        return res.status(403).send("Email is taken");
+        return res.status(403).send("error.takenEmail");
       }
     } else if (username) {
       console.log("Username");
@@ -30,9 +30,8 @@ const updateUserBasicInfo = async (req, res, next) => {
         username,
         req.user.id
       );
-      console.log(usernameExist);
       if (usernameExist) {
-        return res.status(403).send("Username is taken");
+        return res.status(403).send("error.takenUsername");
       }
     }
     const updateData = {
@@ -44,7 +43,7 @@ const updateUserBasicInfo = async (req, res, next) => {
     console.log(updateData);
 
     await userService.updateAccountBasicInfo(updateData, req.user.id);
-    res.status(200).send("Completed update user data");
+    res.status(200).send("notice.completedUpdateInfo");
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
@@ -54,10 +53,10 @@ const updateUserPassword = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!userService.comparePassword(oldPassword, req.user.password)) {
-    return res.status(403).send("Old password is not correct");
+    return res.status(403).send("error.oldPasswordIncorrect");
   } else {
     await userService.updateUserPassword(newPassword, req.user.id);
-    res.status(200).send("Update user password");
+    res.status(200).send("notice.updatedUserPassword");
   }
 };
 
@@ -66,7 +65,7 @@ const mapStudentId = async (req, res, next) => {
 
   try {
     await userService.mapStudentId(studentId, req.user.id);
-    res.status(200).send("Completed map student id");
+    res.status(200).send("notice.completedMapId");
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
@@ -99,7 +98,6 @@ const getAllUsers = async (req, res, next) => {
 
 const getAllAdmins = async (req, res, next) => {
   try {
-
     const users = await userService.getAllAdmins();
     res.status(200).json(users);
   } catch (err) {
@@ -108,7 +106,6 @@ const getAllAdmins = async (req, res, next) => {
 };
 
 const updateBanStatus = async (req, res, next) => {
-
   const id = req.body.userID;
   const isBan = req.body.newBanStatus;
 
@@ -122,7 +119,6 @@ const updateBanStatus = async (req, res, next) => {
 };
 
 const updateAdminStatus = async (req, res, next) => {
-
   const id = req.body.userID;
   const role = req.body.newAdminStatus;
 
@@ -139,7 +135,7 @@ const getUserInfo = async (req, res, next) => {
   try {
     const id = req.params.userID;
 
-    if (req.user.role !== "ADMIN"){
+    if (req.user.role !== "ADMIN") {
       return res.status(404);
     }
 
@@ -158,7 +154,6 @@ const getUserRole = async (req, res, next) => {
     res.sendStatus(500) && next(err);
   }
 };
-
 
 module.exports = {
   getUserAccountInfo,

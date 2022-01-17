@@ -138,7 +138,7 @@ const sendMailResetPassword = async (req, res, next) => {
   try {
     isEmailExist = await checkEmailExist(email);
   } catch (error) {
-    res.status(500).send("Email not found");
+    res.status(500).send("error.userNotFound");
   }
 
   if (isEmailExist) {
@@ -176,7 +176,7 @@ const changePassword = async (req, res, next) => {
       res.sendStatus(500) && next(error);
     }
   } else {
-    res.status(500).send("Error occur!! Can not update password");
+    res.status(500).send("error.canNotUpdatePassword");
   }
 };
 
