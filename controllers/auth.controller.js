@@ -102,12 +102,13 @@ const googleAuthCallback = (req, res, next) => {
     } else {
       const accessToken = generateAccessToken(user.dataValues);
       const refreshToken = generateRefreshToken(user.dataValues);
-      const { id, username, email } = user.dataValues;
+      const { id, username, email, avatarUrl } = user.dataValues;
       const responseData = { id, username, email, accessToken, refreshToken };
 
       let url = new URL(`${process.env.REACT_CLIENT_END_POINT}/loginSucess`);
       url.searchParams.append("id", id);
       url.searchParams.append("accessToken", accessToken);
+      url.searchParams.append("avatarURL", avatarUrl);
       res.redirect(url);
     }
   })(req, res, next);

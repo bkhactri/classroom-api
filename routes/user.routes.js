@@ -62,7 +62,7 @@ router.put(
 
 router.get(
   "/userRole",
-  authMiddleware.verifyAdmin,
+  authMiddleware.verifyToken,
   userController.getUserRole
 );
 
