@@ -80,6 +80,6 @@ User.prototype.comparePassword = function (password) {
 };
 
 // Use below code if you edit Schema
-User.sync({alter: true});
+// User.sync({alter: true});
 
 module.exports = User;

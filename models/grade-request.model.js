@@ -56,6 +56,6 @@ Classroom.hasMany(GradeRequest);
 GradeStructure.hasMany(GradeRequest);
 StudentIdentification.hasMany(GradeRequest);
 
-GradeRequest.sync();
+// GradeRequest.sync();
 
 module.exports = GradeRequest;
