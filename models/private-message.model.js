@@ -6,7 +6,7 @@ const StudentIdentification = require("./student-identification.model");
 const GradeStructure = require("./grade-structure.model");
 const User = require("./user.model");
 
-const PrivateMessage = sequelize.define("private-message", {
+const PrivateMessage = sequelize.define("private_message", {
   id: {
     primaryKey: true,
     type: Sequelize.UUID,
