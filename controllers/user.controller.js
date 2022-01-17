@@ -1,5 +1,6 @@
 const userService = require("../services/user.service");
 const participantService = require("../services/participant.service");
+const notificationService = require("../services/notification.service");
 
 const getUserAccountInfo = async (req, res, next) => {
   try {
@@ -155,6 +156,35 @@ const getUserRole = async (req, res, next) => {
   }
 };
 
+const getNotifications = async (req, res, next) => {
+  const { userId } = req.params;
+
+  try {
+    const notifications = await notificationService.getNotificationsByUserId(
+      userId
+    );
+    res.status(200).json(notifications);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const updateNotificationsStatus = async (req, res, next) => {
+  const { userId, noticeId } = req.body;
+
+  console.log(userId, noticeId);
+
+  try {
+    const result = await notificationService.updateNotificationsStatus(
+      userId,
+      noticeId
+    );
+    res.status(200).json(result[1]);
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
 module.exports = {
   getUserAccountInfo,
   updateUserBasicInfo,
@@ -167,4 +197,6 @@ module.exports = {
   getUserInfo,
   updateAdminStatus,
   getUserRole,
+  getNotifications,
+  updateNotificationsStatus,
 };

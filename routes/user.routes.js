@@ -31,16 +31,16 @@ router.post(
 );
 
 router.get(
-  "/getAllUsers", 
-  authMiddleware.verifyAdmin, 
+  "/getAllUsers",
+  authMiddleware.verifyAdmin,
   userController.getAllUsers
-  );
+);
 
 router.get(
-  "/getAllAdmins", 
-  authMiddleware.verifyAdmin, 
+  "/getAllAdmins",
+  authMiddleware.verifyAdmin,
   userController.getAllAdmins
-  );
+);
 
 router.put(
   "/updateBanStatus",
@@ -60,10 +60,18 @@ router.put(
   userController.updateAdminStatus
 );
 
+router.get("/userRole", authMiddleware.verifyToken, userController.getUserRole);
+
 router.get(
-  "/userRole",
+  "/notifications/:userId",
   authMiddleware.verifyToken,
-  userController.getUserRole
+  userController.getNotifications
+);
+
+router.put(
+  "/notifications",
+  authMiddleware.verifyToken,
+  userController.updateNotificationsStatus
 );
 
 module.exports = router;

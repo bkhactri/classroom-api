@@ -40,6 +40,8 @@ const finalizedColumn = async (data) => {
             { gradeStructureId: data.gradeId },
           ],
         },
+        returning: true,
+        raw: true,
       }
     );
   } catch (e) {
@@ -64,9 +66,18 @@ const csv2JSON = (filePath) => {
   });
 };
 
-const updateFromCsv = (csvResult, gradeStructureId, classroomId, maximumPoint) => {
-  const firstField = csvResult.data[0][0] === "Student ID" ? "studentIdentificationId" : "point";
-  const secondField = firstField === "studentIdentificationId" ? "point" : "studentIdentificationId";
+const updateFromCsv = (
+  csvResult,
+  gradeStructureId,
+  classroomId,
+  maximumPoint
+) => {
+  const firstField =
+    csvResult.data[0][0] === "Student ID" ? "studentIdentificationId" : "point";
+  const secondField =
+    firstField === "studentIdentificationId"
+      ? "point"
+      : "studentIdentificationId";
   const pointIndex = firstField === "studentIdentificationId" ? 1 : 0;
 
   console.log("h=>", maximumPoint);
@@ -94,18 +105,21 @@ const updateFromCsv = (csvResult, gradeStructureId, classroomId, maximumPoint) =
   return Promise.all(updateRequests);
 };
 
-const getBoardByClassIdAndStructureId = async (classroomId, gradeStructureId) => {
+const getBoardByClassIdAndStructureId = async (
+  classroomId,
+  gradeStructureId
+) => {
   try {
     return await Grade.findAll({
       where: {
         classroomId,
-        gradeStructureId
+        gradeStructureId,
       },
     });
   } catch (e) {
     throw new Error(e.message);
   }
-}
+};
 
 const getCSVGrade = (grades, students, headers) => {
   const initData = [headers];
@@ -113,31 +127,33 @@ const getCSVGrade = (grades, students, headers) => {
     if (item?.studentIdentificationId) {
       initData.push([item.studentIdentificationId, item.point || ""]);
     }
-  })
+  });
 
   const dataToParse = initData.concat(
     students
-      .filter((student) => !initData.map((data) => data[0])?.includes(student.id))
+      .filter(
+        (student) => !initData.map((data) => data[0])?.includes(student.id)
+      )
       .map((student) => [student.id])
-  )
+  );
 
   const csv = papaparse.unparse(dataToParse);
 
   return csv;
-}
+};
 
 const getGradesForStudent = async (classroomId, studentIdentificationId) => {
   try {
     return await Grade.findAll({
       where: {
         classroomId,
-        studentIdentificationId
+        studentIdentificationId,
       },
     });
   } catch (e) {
     throw new Error(e.message);
   }
-}
+};
 
 module.exports = {
   gradeByStudentId,
@@ -148,5 +164,5 @@ module.exports = {
   updateFromCsv,
   getBoardByClassIdAndStructureId,
   getCSVGrade,
-  getGradesForStudent
+  getGradesForStudent,
 };
