@@ -2,6 +2,13 @@ const gradeService = require("../services/grade.service");
 const gradeStructureService = require("../services/grade-structure.service");
 const participantService = require("../services/participant.service");
 const studentIdentificationService = require("../services/student-identification.service");
+const notificationService = require("../services/notification.service");
+const userService = require("../services/user.service");
+const socketService = require("../services/socket.service");
+const classroomService = require("../services/classroom.service");
+const {
+  finalizedNotificationsHelper,
+} = require("../utils/helper/notificationHelper");
 const path = require("path");
 const fs = require("fs");
 
@@ -121,27 +128,59 @@ const getGradeBoard = async (req, res, next) => {
 };
 
 const finalizedGradeColumn = async (req, res, next) => {
-  console.log(req.body);
   try {
+    const grade = await gradeStructureService.findById(req.body.gradeId);
+    const classroom = await classroomService.findById(req.body.classroomId);
+    const gradeName = grade.dataValues.name;
+    const className = classroom.dataValues.name;
+
     const queryResult = await gradeService.finalizedColumn(req.body);
-    if (queryResult) {
-      res.sendStatus(200);
+    const studentIds = queryResult[1].map(
+      (student) => student.studentIdentificationId
+    );
+
+    const users = await userService.findByStudentIds(studentIds);
+    const userIds = users.map((user) => user.id);
+
+    const { message, link } = finalizedNotificationsHelper(
+      className,
+      gradeName,
+      req.body.classroomId
+    );
+
+    const promises = userIds.map((id) => {
+      return notificationService.createNotification(id, message, link);
+    });
+
+    const result = await Promise.all(promises);
+
+    const onlineUsers = await socketService.getUserOnlineById(userIds);
+    const onlineUserIds = onlineUsers.map((user) => user.socketId);
+
+    if (onlineUserIds.length > 0) {
+      req.app.io.to(onlineUserIds).emit("gradeFinalized", { result });
     }
+    res.sendStatus(200);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
-}
+};
 
 const getTemplate = async (req, res, next) => {
   const classroomId = req.params.classroomId;
 
   try {
-    const studentIdentifications = await studentIdentificationService.getStudentsByClassId(classroomId);
-    res.send(gradeService.getCSVTemplate(studentIdentifications.map((stdId) => stdId.id)));
+    const studentIdentifications =
+      await studentIdentificationService.getStudentsByClassId(classroomId);
+    res.send(
+      gradeService.getCSVTemplate(
+        studentIdentifications.map((stdId) => stdId.id)
+      )
+    );
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
-}
+};
 
 const uploadFile = async (req, res, next) => {
   const fileInfo = req.files.file[0];
@@ -149,7 +188,9 @@ const uploadFile = async (req, res, next) => {
 
   try {
     const csvResult = await gradeService.csv2JSON(filePath);
-    const gradeStructure = await gradeStructureService.findById(req.body.gradeStructureId);
+    const gradeStructure = await gradeStructureService.findById(
+      req.body.gradeStructureId
+    );
 
     await gradeService.updateFromCsv(
       csvResult,
@@ -174,10 +215,19 @@ const exportGradeColumn = async (req, res, next) => {
   const { classroomId, gradeStructureId } = req.params;
 
   try {
-    const grades = await gradeService.getBoardByClassIdAndStructureId(classroomId, gradeStructureId);
-    const studentIdentifications = await studentIdentificationService.getStudentsByClassId(classroomId);
+    const grades = await gradeService.getBoardByClassIdAndStructureId(
+      classroomId,
+      gradeStructureId
+    );
+    const studentIdentifications =
+      await studentIdentificationService.getStudentsByClassId(classroomId);
 
-    res.send(gradeService.getCSVGrade(grades, studentIdentifications, ["Student ID", "Point"]));
+    res.send(
+      gradeService.getCSVGrade(grades, studentIdentifications, [
+        "Student ID",
+        "Point",
+      ])
+    );
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
@@ -187,13 +237,16 @@ const getGradesForStudent = async (req, res, next) => {
   const { classroomId, studentIdentificationId } = req.params;
 
   try {
-    const grades = await gradeService.getGradesForStudent(classroomId, studentIdentificationId);
+    const grades = await gradeService.getGradesForStudent(
+      classroomId,
+      studentIdentificationId
+    );
 
     res.send(grades);
-  } catch(err) {
+  } catch (err) {
     res.sendStatus(500) && next(err);
   }
-}
+};
 
 module.exports = {
   getGradeStructures,
@@ -207,5 +260,5 @@ module.exports = {
   getTemplate,
   uploadFile,
   exportGradeColumn,
-  getGradesForStudent
+  getGradesForStudent,
 };

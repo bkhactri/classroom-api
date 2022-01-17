@@ -3,9 +3,20 @@ const { Op } = require("sequelize");
 
 const bcrypt = require("bcryptjs");
 
+const findByStudentIds = async (studentIds) => {
+  try {
+    return await User.findAll({
+      where: {
+        studentId: studentIds,
+      },
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const getAccountInfo = async (userId) => {
   try {
-    console.log('userid', userId);
     const queryResult = await User.findByPk(userId);
     return (resData = {
       id: queryResult.dataValues.id,
@@ -154,15 +165,15 @@ const checkEmailExist = async (email) => {
 
 const getAllUsers = async () => {
   return await User.findAll();
-}
+};
 
 const getAllAdmins = async () => {
   return await User.findAll({
     where: {
-      role: "ADMIN"
-    }
+      role: "ADMIN",
+    },
   });
-}
+};
 
 const updateBanStatus = async (id, newStatus) => {
   try {
@@ -222,7 +233,6 @@ const getUserRole = async (userId) => {
   }
 };
 
-
 module.exports = {
   getAccountInfo,
   updateAccountBasicInfo,
@@ -240,4 +250,5 @@ module.exports = {
   getUserInfo,
   updateAdminiStatus,
   getUserRole,
+  findByStudentIds,
 };
