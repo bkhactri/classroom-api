@@ -1,4 +1,5 @@
 const GradeRequest = require("../models/grade-request.model");
+const User = require("../models/user.model");
 
 const findManyByIds = async (
   classroomId,
@@ -9,7 +10,11 @@ const findManyByIds = async (
     return await GradeRequest.findAll({
       where: { classroomId, gradeStructureId, studentIdentificationId },
       order: [["createdAt", "DESC"]],
-      include: 'resolver'
+      include: {
+        model: User,
+        as: "resolver",
+        attributes: ["username", "displayName"],
+      },
     });
   } catch (e) {
     throw new Error(e.message);
@@ -23,7 +28,12 @@ const findLatestOneByIds = async (
 ) => {
   try {
     return await GradeRequest.findOne({
-      where: { classroomId, gradeStructureId, studentIdentificationId, resolveStatus: null },
+      where: {
+        classroomId,
+        gradeStructureId,
+        studentIdentificationId,
+        resolveStatus: null,
+      },
       order: [["createdAt", "DESC"]],
     });
   } catch (e) {
@@ -32,7 +42,7 @@ const findLatestOneByIds = async (
 };
 
 /**
- * 
+ *
  * @param  ids { classroomId, gradeStructureId, studentIdentificationId }
  * @param data { point, reason }
  */
@@ -53,7 +63,7 @@ const create = async (ids, data) => {
 };
 
 /**
- * 
+ *
  * @param  ids { gradeRequestId, classroomId, gradeStructureId, studentIdentificationId }
  * @param data { resolveStatus, resolverId }
  */
@@ -87,5 +97,5 @@ module.exports = {
   findManyByIds,
   findLatestOneByIds,
   create,
-  update
-}
+  update,
+};

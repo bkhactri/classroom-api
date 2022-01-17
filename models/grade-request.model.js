@@ -6,7 +6,7 @@ const StudentIdentification = require("./student-identification.model");
 const GradeStructure = require("./grade-structure.model");
 const User = require("./user.model");
 
-const GradeRequest = sequelize.define("grade-request", {
+const GradeRequest = sequelize.define("grade_request", {
   id: {
     primaryKey: true,
     type: Sequelize.UUID,

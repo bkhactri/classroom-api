@@ -1,6 +1,8 @@
 const gradeRequestService = require("../services/grade-request.service");
 const gradeService = require("../services/grade.service");
 const participantService = require("../services/participant.service");
+const userService = require("../services/user.service");
+const privateMessageService = require("../services/private-message.service");
 
 const getAllRequests = async (req, res, next) => {
   const { classroomId } = req.params;
@@ -117,9 +119,77 @@ const updateRequest = async (req, res, next) => {
   }
 };
 
+const getRequestMessages = async (req, res, next) => {
+  const { classroomId, gradeStructureId, studentIdentificationId } = req.params;
+
+  try {
+    const participant = await participantService.findById(
+      req.user.id,
+      classroomId
+    );
+
+    switch (participant?.role) {
+      case "STUDENT":
+        const userInfo = await userService.getAccountInfo(req.user.id);
+        if (userInfo.studentId !== studentIdentificationId) {
+          return res.sendStatus(403);
+        }
+      case "OWNER":
+      case "TEACHER":
+        const messages = await privateMessageService.findByIds(
+          classroomId,
+          gradeStructureId,
+          studentIdentificationId
+        );
+        res.send(messages);
+
+        break;
+      default:
+        return res.sendStatus(403);
+    }
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
+const createRequestMessage = async (req, res, next) => {
+  const { classroomId, gradeStructureId, studentIdentificationId } = req.params;
+  const { privateMessage } = req.body;
+
+  try {
+    const participant = await participantService.findById(
+      req.user.id,
+      classroomId
+    );
+
+    switch (participant?.role) {
+      case "STUDENT":
+        const userInfo = await userService.getAccountInfo(req.user.id);
+        if (userInfo.studentId !== studentIdentificationId) {
+          return res.sendStatus(403);
+        }
+      case "OWNER":
+      case "TEACHER":
+        const message = await privateMessageService.createRequestMessage(
+          { classroomId, gradeStructureId, studentIdentificationId },
+          { message: privateMessage, senderId: req.user.id }
+        );
+        res.send(message);
+
+        break;
+      default:
+        return res.sendStatus(403);
+    }
+  } catch (err) {
+    res.sendStatus(500) && next(err);
+  }
+};
+
 module.exports = {
   getAllRequests,
   getSpecificStudentRequests,
   createRequest,
   updateRequest,
+  getRequestMessages,
+  createRequestMessage
 };

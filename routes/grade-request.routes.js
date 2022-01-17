@@ -22,6 +22,18 @@ router.post(
   gradeRequestController.createRequest
 )
 
+router.get(
+  "/message/:classroomId/:gradeStructureId/:studentIdentificationId",
+  authMiddleware.verifyToken,
+  gradeRequestController.getRequestMessages
+)
+
+router.post(
+  "/message/:classroomId/:gradeStructureId/:studentIdentificationId",
+  authMiddleware.verifyToken,
+  gradeRequestController.createRequestMessage
+)
+
 router.put(
   "/:classroomId/:gradeStructureId/:studentIdentificationId/:gradeRequestId",
   authMiddleware.verifyToken,
