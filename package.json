@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start:dev": "cross-env NODE_ENV=development nodemon ./bin/www",
-    "start": "cross-env NODE_ENV=production node ./bin/www"
+    "start": "cross-env NODE_ENV=production node ./bin/www",
+    "start:docker": "cross-env NODE_ENV=docker node ./bin/www"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
