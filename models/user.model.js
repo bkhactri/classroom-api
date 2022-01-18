@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = require("../utils/database/connection");
 const bcrypt = require("bcryptjs");
 const StudentIdentification = require("./student-identification.model");
+const GoogleUser = require("./googleUser.model");
 
 const User = sequelize.define("user", {
   id: {
@@ -81,5 +82,7 @@ User.prototype.comparePassword = function (password) {
 
 // Use below code if you edit Schema
 // User.sync({alter: true});
+
+User.hasOne(GoogleUser);
 
 module.exports = User;

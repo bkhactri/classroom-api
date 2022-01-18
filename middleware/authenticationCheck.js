@@ -28,7 +28,7 @@ const verifyAdmin = (req, res, next) => {
       }
       
       if (user.role !== 'ADMIN'){
-        return res.status(401).send("You are not authenticated!");
+        return res.status(401).send("You are not admin!");
       }
 
       req.user = user;

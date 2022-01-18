@@ -4,6 +4,8 @@ const GoogleUser = require("../../models/googleUser.model");
 const User = require("../../models/user.model");
 
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const md5 = require("md5");
+
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -80,7 +82,7 @@ const register = (
         }
 
         if (newUser) {
-          GoogleUserTable.create({ userID: newUser.id, googleID: googleID });
+          GoogleUserTable.create({ userId: newUser.id, googleID: googleID });
           return done(null, newUser);
         }
       })
