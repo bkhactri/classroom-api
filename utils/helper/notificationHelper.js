@@ -13,17 +13,34 @@ const createRequestNotificationsHelper = (names, ids) => {
   const link = `/classroom/${classroomId}/grades?gradeStructureId=${gradeStructureId}&studentId=${studentId}`;
 
   return { message, link };
-}
+};
 
-const resolveRequestNotificationHelper = (className, gradeName, classroomId, gradeStructureId) => {
+const resolveRequestNotificationHelper = (
+  className,
+  gradeName,
+  classroomId,
+  gradeStructureId
+) => {
   const message = `[${className}] Your grade review request of ${gradeName} has been resolved`;
   const link = `/classroom/${classroomId}/myGrades?gradeStructureId=${gradeStructureId}`;
 
   return { message, link };
-}
+};
+
+const replyStudentGradeReviewNotificationHelper = (
+  className,
+  gradeName,
+  classroomId
+) => {
+  const message = `[${className}] Teacher has replied on your ${gradeName} grade request`;
+  const link = `/classroom/${classroomId}/myGrades`;
+
+  return { message, link };
+};
 
 module.exports = {
   finalizedNotificationsHelper,
   createRequestNotificationsHelper,
-  resolveRequestNotificationHelper
+  resolveRequestNotificationHelper,
+  replyStudentGradeReviewNotificationHelper,
 };

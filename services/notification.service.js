@@ -13,7 +13,11 @@ const createNotification = async (userId, message, link) => {
 
 const getNotificationsByUserId = async (userId) => {
   try {
-    return await Notification.findAll({ where: { userId } }, { raw: true });
+    return await Notification.findAll({
+      where: { userId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
   } catch (e) {
     throw new Error(e.message);
   }
