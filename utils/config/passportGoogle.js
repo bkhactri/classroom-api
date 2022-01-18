@@ -30,7 +30,7 @@ const initializeGooglePassport = (passport) => {
                     
                     register(username, email, password, profile.id, GoogleUser, done);
                 } else {
-                    User.findByPk(googleUser.userID).then(user => {
+                    User.findByPk(googleUser.userId).then(user => {
                       // console.log('user', user);
                       return done(null, user);
                     })
