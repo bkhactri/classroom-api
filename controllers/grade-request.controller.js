@@ -2,7 +2,14 @@ const gradeRequestService = require("../services/grade-request.service");
 const gradeService = require("../services/grade.service");
 const participantService = require("../services/participant.service");
 const userService = require("../services/user.service");
+const gradeStructureService = require("../services/grade-structure.service");
+const classroomService = require("../services/classroom.service");
 const privateMessageService = require("../services/private-message.service");
+const socketService = require("../services/socket.service");
+const notificationService = require("../services/notification.service");
+const {
+  createRequestNotificationsHelper,
+} = require("../utils/helper/notificationHelper");
 
 const getAllRequests = async (req, res, next) => {
   const { classroomId } = req.params;
@@ -80,6 +87,42 @@ const createRequest = async (req, res, next) => {
       { classroomId, gradeStructureId, studentIdentificationId },
       { point, reason }
     );
+
+    const grade = await gradeStructureService.findById(gradeStructureId);
+    const classroom = await classroomService.findById(classroomId);
+    const gradeName = grade.dataValues.name;
+    const className = classroom.dataValues.name;
+
+    const { message, link } = createRequestNotificationsHelper(
+      {
+        className,
+        gradeName
+      },
+      {
+        classroomId,
+        studentId: studentIdentificationId,
+        gradeStructureId
+      }
+    );
+
+    const participants = await participantService.findByClassID(classroomId);
+    const teacherIds = participants
+      .filter((p) => ["OWNER", "TEACHER"].includes(p.role))
+      .map((p) => p.userId);
+
+    const promises = teacherIds.map((userId) => {
+      return notificationService.createNotification(userId, message, link);
+    });
+
+    const result = await Promise.all(promises);
+
+    const onlineUsers = await socketService.getUserOnlineById(teacherIds);
+    const onlineUserIds = onlineUsers.map((user) => user.socketId);
+
+    if (onlineUserIds.length) {
+      req.app.io.to(onlineUserIds).emit("createReviewRequest", { result });
+    }
+
     res.send(gradeRequest);
   } catch (err) {
     res.sendStatus(500) && next(err);
