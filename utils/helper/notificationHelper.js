@@ -38,9 +38,21 @@ const replyStudentGradeReviewNotificationHelper = (
   return { message, link };
 };
 
+const replyTeacherGradeReviewNotificationHelper = (
+  className,
+  gradeName,
+  classroomId
+) => {
+  const message = `[${className}] Student has replied on ${gradeName} grade request`;
+  const link = `/classroom/${classroomId}/grades`;
+
+  return { message, link };
+};
+
 module.exports = {
   finalizedNotificationsHelper,
   createRequestNotificationsHelper,
   resolveRequestNotificationHelper,
   replyStudentGradeReviewNotificationHelper,
+  replyTeacherGradeReviewNotificationHelper,
 };
