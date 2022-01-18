@@ -73,6 +73,7 @@ const register = (
       email: email,
       password: password,
       avatarUrl: `https://gravatar.com/avatar/${md5(email)}?d=identicon`,
+      isActive: true,
     };
 
     User.create(userDataForSignUp)
