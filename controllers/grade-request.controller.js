@@ -11,6 +11,7 @@ const {
   createRequestNotificationsHelper,
   replyStudentGradeReviewNotificationHelper,
   resolveRequestNotificationHelper,
+  replyTeacherGradeReviewNotificationHelper,
 } = require("../utils/helper/notificationHelper");
 
 const getAllRequests = async (req, res, next) => {
@@ -245,50 +246,77 @@ const createRequestMessage = async (req, res, next) => {
       classroomId
     );
 
-    switch (participant?.role) {
-      case "STUDENT":
-        const userInfo = await userService.getAccountInfo(req.user.id);
-        if (userInfo.studentId !== studentIdentificationId) {
-          return res.sendStatus(403);
-        }
-      case "OWNER":
-      case "TEACHER":
-        const messageRes = await privateMessageService.createRequestMessage(
-          { classroomId, gradeStructureId, studentIdentificationId },
-          { message: privateMessage, senderId: req.user.id }
-        );
-
-        const { message, link } = replyStudentGradeReviewNotificationHelper(
-          className,
-          gradeName,
-          classroomId
-        );
-
-        const students = await userService.findByStudentIds(
-          studentIdentificationId
-        );
-        const userId = students[0].id;
-
-        const result = await notificationService.createNotification(
-          userId,
-          message,
-          link
-        );
-
-        const onlineUsers = await socketService.getUserOnlineById(userId);
-        const onlineUserIds = onlineUsers.map((user) => user.socketId);
-
-        if (onlineUserIds.length) {
-          req.app.io
-            .to(onlineUserIds)
-            .emit("teacherReplyGradeReview", { result: [result] });
-        }
-
-        res.send(messageRes);
-
-        break;
-      default:
+    if (participant?.role === "STUDENT") {
+      const userInfo = await userService.getAccountInfo(req.user.id);
+      if (userInfo.studentId !== studentIdentificationId) {
         return res.sendStatus(403);
+      }
+
+      const messageStudent = await privateMessageService.createRequestMessage(
+        { classroomId, gradeStructureId, studentIdentificationId },
+        { message: privateMessage, senderId: req.user.id }
+      );
+
+      const { message, link } = replyTeacherGradeReviewNotificationHelper(
+        className,
+        gradeName,
+        classroomId
+      );
+
+      const participants = await participantService.findByClassID(classroomId);
+      const teacherIds = participants
+        .filter((p) => ["OWNER", "TEACHER"].includes(p.role))
+        .map((p) => p.userId);
+
+      const promises = teacherIds.map((userId) => {
+        return notificationService.createNotification(userId, message, link);
+      });
+
+      const result = await Promise.all(promises);
+
+      const onlineUsers = await socketService.getUserOnlineById(teacherIds);
+      const onlineUserIds = onlineUsers.map((user) => user.socketId);
+      console.log(onlineUserIds);
+      if (onlineUserIds.length) {
+        req.app.io
+          .to(onlineUserIds)
+          .emit("studentReplyGradeReview", { result });
+      }
+
+      res.send(messageStudent);
+    } else {
+      const messageTeacher = await privateMessageService.createRequestMessage(
+        { classroomId, gradeStructureId, studentIdentificationId },
+        { message: privateMessage, senderId: req.user.id }
+      );
+
+      const students = await userService.findByStudentIds(
+        studentIdentificationId
+      );
+      const userId = students[0].id;
+
+      const { message, link } = replyStudentGradeReviewNotificationHelper(
+        className,
+        gradeName,
+        classroomId
+      );
+
+      const result = await notificationService.createNotification(
+        userId,
+        message,
+        link
+      );
+
+      const onlineUsers = await socketService.getUserOnlineById(userId);
+      const onlineUserIds = onlineUsers.map((user) => user.socketId);
+
+      if (onlineUserIds.length) {
+        req.app.io
+          .to(onlineUserIds)
+          .emit("teacherReplyGradeReview", { result: [result] });
+      }
+
+      res.send(messageTeacher);
     }
   } catch (err) {
     res.sendStatus(500) && next(err);
