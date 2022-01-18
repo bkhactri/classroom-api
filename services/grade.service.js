@@ -5,13 +5,16 @@ const fs = require("fs");
 
 const gradeByStudentId = async (data) => {
   try {
-    return await Grade.upsert({
-      point: data.gradePoint,
-      status: data.status,
-      classroomId: data.classroomId,
-      gradeStructureId: data.gradeId,
-      studentIdentificationId: data.studentId,
-    });
+    return await Grade.upsert(
+      {
+        point: data.gradePoint,
+        status: data.status,
+        classroomId: data.classroomId,
+        gradeStructureId: data.gradeId,
+        studentIdentificationId: data.studentId,
+      },
+      { returning: true, raw: true }
+    );
   } catch (e) {
     throw new Error(e.message);
   }
