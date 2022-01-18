@@ -8,6 +8,9 @@ const privateMessageService = require("../services/private-message.service");
 const socketService = require("../services/socket.service");
 const notificationService = require("../services/notification.service");
 const {
+  resolveRequestNotificationHelper,
+} = require("../utils/helper/notificationHelper");
+const {
   createRequestNotificationsHelper,
 } = require("../utils/helper/notificationHelper");
 
@@ -156,6 +159,31 @@ const updateRequest = async (req, res, next) => {
       },
       { resolveStatus, resolverId: req.user.id }
     );
+
+    const grade = await gradeStructureService.findById(gradeStructureId);
+    const classroom = await classroomService.findById(classroomId);
+    const gradeName = grade.dataValues.name;
+    const className = classroom.dataValues.name;
+
+    const { message, link } = resolveRequestNotificationHelper(
+      className,
+      gradeName,
+      classroomId,
+      gradeStructureId
+    );
+
+    const students = await userService.findByStudentIds(studentIdentificationId);
+    const userId = students[0].id;
+
+    const result = await notificationService.createNotification(userId, message, link);
+
+    const onlineUsers = await socketService.getUserOnlineById(userId);
+    const onlineUserIds = onlineUsers.map((user) => user.socketId);
+
+    if (onlineUserIds.length) {
+      req.app.io.to(onlineUserIds).emit("gradeReviewResolved", { result: [result] });
+    }
+
     res.send(gradeRequest[1][0].get());
   } catch (err) {
     res.sendStatus(500) && next(err);
