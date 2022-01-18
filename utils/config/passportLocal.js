@@ -36,6 +36,13 @@ passport.use(
             status: 400,
             message: "error.incorrectPassword",
           });
+
+        if (user.isBan)
+          return done(null, false, {
+            status: 400,
+            message: "error.banned",
+          });
+
         return done(null, user);
       });
     }

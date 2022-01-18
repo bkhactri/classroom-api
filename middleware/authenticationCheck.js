@@ -9,6 +9,9 @@ const verifyToken = (req, res, next) => {
         return res.status(403).send("Token is not valid!");
       }
       req.user = user;
+      if (user.isBan){
+        return res.status(404).send("You have been banned");
+      }
       next();
     });
   } else {
@@ -29,6 +32,10 @@ const verifyAdmin = (req, res, next) => {
       
       if (user.role !== 'ADMIN'){
         return res.status(401).send("You are not admin!");
+      }
+
+      if (user.isBan){
+        return res.status(404).send("You have been banned");
       }
 
       req.user = user;

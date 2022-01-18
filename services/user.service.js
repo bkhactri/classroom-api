@@ -26,6 +26,7 @@ const getAccountInfo = async (userId) => {
       email: queryResult.dataValues.email,
       isActive: queryResult.dataValues.isActive,
       avatarUrl: queryResult.dataValues.avatarUrl,
+      isBan: queryResult.dataValues.isBan,
     });
   } catch (e) {
     throw new Error(e.message);
