@@ -8,10 +8,9 @@ const privateMessageService = require("../services/private-message.service");
 const socketService = require("../services/socket.service");
 const notificationService = require("../services/notification.service");
 const {
-  resolveRequestNotificationHelper,
-} = require("../utils/helper/notificationHelper");
-const {
   createRequestNotificationsHelper,
+  replyStudentGradeReviewNotificationHelper,
+  resolveRequestNotificationHelper,
 } = require("../utils/helper/notificationHelper");
 
 const getAllRequests = async (req, res, next) => {
@@ -99,12 +98,12 @@ const createRequest = async (req, res, next) => {
     const { message, link } = createRequestNotificationsHelper(
       {
         className,
-        gradeName
+        gradeName,
       },
       {
         classroomId,
         studentId: studentIdentificationId,
-        gradeStructureId
+        gradeStructureId,
       }
     );
 
@@ -172,16 +171,24 @@ const updateRequest = async (req, res, next) => {
       gradeStructureId
     );
 
-    const students = await userService.findByStudentIds(studentIdentificationId);
+    const students = await userService.findByStudentIds(
+      studentIdentificationId
+    );
     const userId = students[0].id;
 
-    const result = await notificationService.createNotification(userId, message, link);
+    const result = await notificationService.createNotification(
+      userId,
+      message,
+      link
+    );
 
     const onlineUsers = await socketService.getUserOnlineById(userId);
     const onlineUserIds = onlineUsers.map((user) => user.socketId);
 
     if (onlineUserIds.length) {
-      req.app.io.to(onlineUserIds).emit("gradeReviewResolved", { result: [result] });
+      req.app.io
+        .to(onlineUserIds)
+        .emit("gradeReviewResolved", { result: [result] });
     }
 
     res.send(gradeRequest[1][0].get());
@@ -227,6 +234,11 @@ const createRequestMessage = async (req, res, next) => {
   const { classroomId, gradeStructureId, studentIdentificationId } = req.params;
   const { privateMessage } = req.body;
 
+  const grade = await gradeStructureService.findById(gradeStructureId);
+  const classroom = await classroomService.findById(classroomId);
+  const gradeName = grade.dataValues.name;
+  const className = classroom.dataValues.name;
+
   try {
     const participant = await participantService.findById(
       req.user.id,
@@ -241,11 +253,38 @@ const createRequestMessage = async (req, res, next) => {
         }
       case "OWNER":
       case "TEACHER":
-        const message = await privateMessageService.createRequestMessage(
+        const messageRes = await privateMessageService.createRequestMessage(
           { classroomId, gradeStructureId, studentIdentificationId },
           { message: privateMessage, senderId: req.user.id }
         );
-        res.send(message);
+
+        const { message, link } = replyStudentGradeReviewNotificationHelper(
+          className,
+          gradeName,
+          classroomId
+        );
+
+        const students = await userService.findByStudentIds(
+          studentIdentificationId
+        );
+        const userId = students[0].id;
+
+        const result = await notificationService.createNotification(
+          userId,
+          message,
+          link
+        );
+
+        const onlineUsers = await socketService.getUserOnlineById(userId);
+        const onlineUserIds = onlineUsers.map((user) => user.socketId);
+
+        if (onlineUserIds.length) {
+          req.app.io
+            .to(onlineUserIds)
+            .emit("teacherReplyGradeReview", { result: [result] });
+        }
+
+        res.send(messageRes);
 
         break;
       default:
@@ -262,5 +301,5 @@ module.exports = {
   createRequest,
   updateRequest,
   getRequestMessages,
-  createRequestMessage
+  createRequestMessage,
 };
