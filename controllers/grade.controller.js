@@ -107,9 +107,7 @@ const gradeDraftSingleCell = async (req, res, next) => {
   try {
     const serviceResponse = await gradeService.gradeByStudentId(req.body);
 
-    if (serviceResponse[0]) {
-      res.sendStatus(200);
-    }
+    res.send(serviceResponse?.[0]);
   } catch (err) {
     res.sendStatus(500) && next(err);
   }
