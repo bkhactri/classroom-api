@@ -11,29 +11,45 @@ const oauth2Client = new OAuth2(
 oauth2Client.setCredentials({
   refresh_token: process.env.MAIL_REFRESHTOKEN,
 });
-const accessToken = oauth2Client.getAccessToken();
 
-const transporter = nodemailer.createTransport({
-  pool: true,
-  service: "gmail",
-  auth: {
-    type: "OAuth2",
-    user: process.env.MAIL_ADDRESS,
-    clientId: process.env.MAIL_CLIENTID,
-    clientSecret: process.env.MAIL_CLIENTSECRET,
-    refreshToken: process.env.MAIL_REFRESHTOKEN,
-    accessToken,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+const createTransport = async (accessTokenPromise) => {
+  try {
+    const accessToken = await accessTokenPromise;
+
+    return nodemailer.createTransport({
+      pool: true,
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.MAIL_ADDRESS,
+        clientId: process.env.MAIL_CLIENTID,
+        clientSecret: process.env.MAIL_CLIENTSECRET,
+        refreshToken: process.env.MAIL_REFRESHTOKEN,
+        accessToken,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+  } catch (err) {
+    console.warn(err);
+    return null;
+  }
+};
+
+let transporter;
 
 const checkMailConnection = () => {
-  transporter.verify((err, success) => {
-    if (err) console.log(err);
-    if (success) console.log("Server is ready to handle mail");
-  });
+  createTransport(oauth2Client.getAccessToken())
+    .then((result) => {
+      transporter = result;
+
+      transporter.verify((err, success) => {
+        if (err) console.log(err);
+        if (success) console.log("Server is ready to handle mail");
+      });
+    })
+    .catch((err) => console.warn(err));
 };
 
 /**
@@ -50,7 +66,17 @@ const sendMail = async (recipients, subject, htmlContent) => {
     html: htmlContent,
   };
 
-  return await transporter.sendMail(mailOptions);
+  try {
+    const result = await transporter.sendMail(mailOptions);
+    
+    return result;
+  } catch (err) {
+    console.warn(err);
+
+    transporter = await createTransport(oauth2Client.getAccessToken());
+
+    return await transporter.sendMail(mailOptions);
+  }
 };
 
 /**
