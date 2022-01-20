@@ -23,6 +23,8 @@ const updateUserBasicInfo = async (req, res, next) => {
       );
       if (emailExist) {
         return res.status(403).send("error.takenEmail");
+      } else {
+        await userService.updateActiveStatus(req.user.id);
       }
     } else if (username) {
       console.log("Username");
@@ -40,8 +42,6 @@ const updateUserBasicInfo = async (req, res, next) => {
       displayName: displayName ? displayName : req.user.displayName,
       username: username ? username : req.user.username,
     };
-
-    console.log(updateData);
 
     await userService.updateAccountBasicInfo(updateData, req.user.id);
     res.status(200).send("notice.completedUpdateInfo");

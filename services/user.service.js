@@ -234,6 +234,21 @@ const getUserRole = async (userId) => {
   }
 };
 
+const updateActiveStatus = async (id) => {
+  try {
+    await User.update(
+      { isActive: false },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
 module.exports = {
   getAccountInfo,
   updateAccountBasicInfo,
@@ -252,4 +267,5 @@ module.exports = {
   updateAdminiStatus,
   getUserRole,
   findByStudentIds,
+  updateActiveStatus,
 };
